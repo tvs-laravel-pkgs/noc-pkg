@@ -38,9 +38,10 @@ class NocController extends Controller {
 
 	public function getNocList(Request $request) {
 		$nocs = Noc::withTrashed()
+			->join('noc_types','nocs.type_id','=','noc_types.id')
 			->select([
 				'nocs.*',
-				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
+				//DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
 			])
 			->where('nocs.company_id', $this->company_id)
 		/*->where(function ($query) use ($request) {
