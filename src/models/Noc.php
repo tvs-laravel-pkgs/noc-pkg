@@ -17,6 +17,8 @@ class Noc extends Model {
 		'to_entity_type',
 		'to_entity_id',
 		'type_id',
+		'company_id',
+		'for_id',
 	];
 
 	public static function createFromObject($record_data) {
