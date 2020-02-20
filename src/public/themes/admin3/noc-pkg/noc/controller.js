@@ -57,6 +57,42 @@ app.component('nocList', {
                 $('#entities_list').DataTable().draw();
             }
         });*/
+        $scope.deleteConfirm = function($id) {
+                bootbox.confirm({
+                    message: 'Do you want to delete this activity?',
+                    className: 'action-confirm-modal',
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function(result) {
+                        if (result) {
+                            $http.get(
+                                laravel_routes['deleteNoc'], {
+                                    params: {
+                                        id: $id,
+                                    }
+                                }
+                            ).then(function(response) {
+                                if (response.data.success) {
+                                    custom_noty('success', response.data.message);
+                                    $('#noc_table').DataTable().ajax.reload();
+                                    $scope.$apply();
+                                } else {
+                                    custom_noty('error', response.data.errors);
+                                }
+                            });
+                            //$window.location.href = activity_status_delete_url + '/' + $id;
+                        }
+                    }
+                });
+            }
 
         var dataTable = $('#noc_table').DataTable({
             "dom": dom_structure,
@@ -89,7 +125,7 @@ app.component('nocList', {
                 { data: 'number', name: 'nocs.name', searchable: true},
                 { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
-                //{ data: 'created_at', searchable: false},
+                { data: 'create_date', searchable: false},
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total + '/' + max)
@@ -108,10 +144,21 @@ app.component('nocList', {
                 $('.search label input').focus();
             },
         });
+        $('.dataTables_length select').select2();
+            $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
+            $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+            $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+            $('.add_new_button').html(
+                '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
+                'Add ' + self.entity_type.name +
+                '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
+            );
+
+
         //DELETE
-        $scope.deleteEntity = function($id) {
+        /*$scope.deleteEntity = function($id) {
             $('#entity_id').val($id);
-        }
+        }*/
         /*$scope.deleteConfirm = function() {
             $id = $('#entity_id').val();
             $http.get(
@@ -331,32 +378,8 @@ app.component('nocList', {
 
     }
 });
-//------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------
 
-/*app.component('nocDelete', {
-    controller: function($http, $window, HelperService, $scope, $routeParams) {
-        $.ajax({
-            url: noc_delete_row + '/' + $routeParams.id,
-            type: 'get',
-            success: function(response) {
-                // console.log(response);
-                if (response.success == true) {
-                    new Noty({
-                        type: 'success',
-                        layout: 'topRight',
-                        text: 'Activity deleted successfully',
-                    }).show();
-                    $window.location.href = noc_list_url;
-                }
-            }
-        });
-    }
-});*/
-//------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------
-
-/*app.component('nocView', {
+app.component('nocView', {
     templateUrl: noc_view_template_url,
     controller: function($http, $location, $window, HelperService, $scope, $routeParams, $rootScope, $location) {
         $scope.loading = true;
@@ -364,10 +387,12 @@ app.component('nocList', {
         self.hasPermission = HelperService.hasPermission;
         self.filter_img_url = filter_img_url;
         // self.style_dot_image_url = style_dot_image_url;
-        get_view_data_url = typeof($routeParams.id) == 'undefined' ? noc_view_data_url + '/' : noc_view_data_url + '/' + $routeParams.view_type_id + '/view/' + $routeParams.id;
+        console.log(noc_view_data_url);
+        get_view_data_url = typeof($routeParams.id) == 'undefined' ? noc_view_data_url + '/' : noc_view_data_url + '/'  + $routeParams.id;
         $http.get(
             get_view_data_url
         ).then(function(response) {
+            console.log('response');
             console.log(response);
             if (!response.data.success) {
                 var errors = '';
@@ -386,27 +411,16 @@ app.component('nocList', {
                 setTimeout(function() {
                     $noty.close();
                 }, 1000);
-                $location.path('/rsa-case-pkg/activity-status/list');
+                $location.path('/noc-pkg/noc/list/1');
                 $scope.$apply();
                 return;
+            }else{
+                self.noc = response.data.noc;
             }
-            self.data = response.data.data.activities;
-            self.data.view_cc_details = view_cc_details;
-            if (view_cc_details == 1) {
-                self.data.span_value = 3;
-            } else {
-                self.data.span_value = 2;
-            }
-            self.data.style_dot_image_url = style_dot_image_url;
-            self.data.style_service_type_image_url = style_service_type_image_url;
-            self.data.style_car_image_url = style_car_image_url;
-            self.data.style_location_image_url = style_location_image_url;
-            self.data.style_profile_image_url = style_profile_image_url;
-            self.data.style_phone_image_url = style_car_image_url;
-            self.data.verification = 0;
-            self.data.page_title = 'Status';
 
-            $('.viewData-toggle--inner.noToggle .viewData-threeColumn--wrapper').slideDown();
+             
+
+            /*$('.viewData-toggle--inner.noToggle .viewData-threeColumn--wrapper').slideDown();
             $('#viewData-toggle--btn1').click(function() {
                 $(this).toggleClass('viewData-toggle--btn_reverse');
                 $('#viewData-threeColumn--wrapper1').slideToggle();
@@ -414,9 +428,22 @@ app.component('nocList', {
             $('#viewData-toggle--btnasp').click(function() {
                 $(this).toggleClass('viewData-toggle--btn_reverse');
                 $('#viewData-threeColumn--wrapperasp').slideToggle();
-            });
+            });*/
             $rootScope.loading = false;
         });
+        $scope.confirmNoc = function($noc_id) {
+        generate_otp_url = generate_otp + '/'  + $noc_id;
+        console.log(generate_otp_url);
+                $http.get(
+                    generate_otp_url
+                    ).then(function(response){
+                        console.log(response);
+                });
+                $("#confirm-noc-modal").modal();
+            }
 
     }
-});*/
+});
+
+//------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------

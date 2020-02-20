@@ -1,53 +1,136 @@
-<div class="col-xs-12 col-sm-12" ng-show="$ctrl.data.verification==0">
+<div class="col-xs-12 col-sm-12">
     <div class="mobile-breadcrumbs-wrapper">
         <ul class="mobile-breadcrumbs-group list-inline">
             <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
-            <li><a href="#">Asp Activities</a></li>
-            <li><a href="#!/rsa-case-pkg/activity-status/list">Status</a></li>
-            <li ng-show="$ctrl.data.verification==0"><a href="javascript:;">View</a></li>
+            <li><a href="#!/noc-pkg/noc/list/">NOCs</a></li>
+            <li><a href="javascript:;">View</a></li>
         </ul>
     </div>
 </div>
-<div class="col-xs-12 col-sm-12" ng-show="$ctrl.data.verification==1">
-    <div class="mobile-breadcrumbs-wrapper">
-        <ul class="mobile-breadcrumbs-group list-inline">
-            <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
-            <li><a href="#">Asp Activities</a></li>
-            <li ng-show="$ctrl.data.verification==1"><a href="#!/rsa-case-pkg/activity-verification/list">Approval</a></li>
-        </ul>
-    </div>
-</div>
+
 <div class="container-fluid dataTable-content--wrapper">
     <div class="row">
         <div class="col-md-12">
             <div class="dataTable--left_wrapper">
-                <h2 class="dataTable-title">Ticket {{$ctrl.data.page_title}}</h2>
+                <h2 class="dataTable-title">NOC View</h2>
                 <p></p>
             </div>
         </div>
     </div><!-- Row -->
-    <asp-activities-header data="$ctrl.data"></asp-activities-header>
+    
     <div class="tab-content">
-        <div id="bill" class="tab-pane fade in active">
-            <billing-details data="$ctrl.data"></billing-details>
+        <br />
+<div class="viewData-wrapper">
+    <form id="billing_form" method="post">
+        No Due Certificate
+
+
+To 
+TVS Auto Assist India Limited 
+Chennai
+
+
+Subject: Account balance confirmation as on {{$ctrl.noc.current_date}}({{$ctrl.noc.quarter_name}})
+Sir 
+This is to confirm that there is no amount dues from TVS Auto Assist India Limited for the services rendered during the period of {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}. 
+ 
+Thanking you 
+
+
+Digitally Authorized by OTP
+Name
+Number
+
+        <div class="tab-content boxed-tab">
+            <div role="tabpanel" class="tab-pane active" id="info-{{$index}}">
+                <div class="table-data-footer">
+                    <div class="row">
+                        <div class="col-md-offset-6 col-md-6 text-right">
+                            <ul class="inline-btns">
+                                <li><button type="button" id="accept-ticket" class="differed-btn btn btn-primary blue" ng-click="confirmNoc($ctrl.noc.id)">Confirm</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- tab-content -->
+    </form>
+</div>
+</div>
+<div class="modal fade uploadMsg modal-bo" id="confirm-noc-modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content txt-center">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><img src="{{$ctrl.data.style_modal_close_image_url}}"></button>
+            </div>
+            <div class="modal-body">
+                <form novalidate id="defer_form" method="post" name="differForm">
+                    <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
+                    <input type="hidden" name="activity_id" id="activity_id" value="{{$ctrl.data.id}}">
+                    <img class="uploadMsg-img" src="{{$ctrl.data.style_question_image_url}}">
+                    <h2 class="uploadMsg-title">Enter OTP</h2>
+                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP">
+                    <textarea name="defer_reason" ng-model="$ctrl.defer_reason" value="{{$ctrl.defer_reason}}" rows='5' class="form-control" autocomplete="off" placeholder="Enter Reason" ng-required="true"></textarea>
+                    <div ng-show="differForm.$submitted || differForm.defer_reason.$touched">
+                        <span style="color:red" ng-show="differForm.defer_reason.$error.required">Differ reason is required.</span>
+                    </div>
+                    <input type="hidden" value="{{$ctrl.data.bo_comments}}" ng-model="$ctrl.data.bo_comments">
+                    <input type="hidden" value="{{$ctrl.data.deduction_reason}}" ng-model="$ctrl.data.deduction_reason">
+                    <div class="clearfix"></div>
+                    <button class="btn btn-primary yellow differ_btn" type="btn" ng-click="differ()">Confirm</button>
+                </form>
+            </div>
         </div>
-        <div id="activity" class="tab-pane fade">
-            <activity-details data="$ctrl.data"></activity-details>
+    </div>
+</div>
+<div class="modal fade uploadMsg" id="confirm-ticket-modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content txt-center">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><img src="{{$ctrl.data.style_modal_close_image_url}}"></button>
+            </div>
+            <form novalidate id="approve_form" method="post" name="myForm">
+                <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
+                <input type="hidden" name="activity_id" id="activity_id" ng-model="$ctrl.data.id" value="{{$ctrl.data.id}}">
+                <input type="hidden" name="bo_km_travelled" ng-model="$ctrl.data.bo_km_travelled" value="{{$ctrl.data.bo_km_travelled}}">
+                <input type="hidden" name="raw_bo_collected" ng-model="$ctrl.data.raw_bo_collected" value="{{$ctrl.data.raw_bo_collected}}">
+                <input type="hidden" name="raw_bo_not_collected" ng-model="$ctrl.data.raw_bo_not_collected" value="{{$ctrl.data.raw_bo_not_collected}}">
+                <input type="hidden" name="bo_deduction" ng-model="$ctrl.data.bo_deduction" value="{{$ctrl.data.bo_deduction}}">
+                <input type="hidden" name="bo_po_amount" ng-model="$ctrl.data.bo_po_amount" value="{{$ctrl.data.bo_po_amount}}">
+                <input type="hidden" name="bo_net_amount" ng-model="$ctrl.data.bo_net_amount" value="{{$ctrl.data.bo_net_amount}}">
+                <input type="hidden" name="bo_amount" ng-model="$ctrl.data.bo_amount" value="{{$ctrl.data.bo_amount}}">
+                <input type="hidden" name="activity_id" ng-model="$ctrl.data.id" value="{{$ctrl.data.id}}">
+                <input type="hidden" ng-model="$ctrl.data.bo_comments">
+                <input type="hidden" ng-model="$ctrl.data.deduction_reason">
+                <div class="modal-body">
+                    <img class="uploadMsg-img" src="{{$ctrl.data.style_checked_image_url}}">
+                    <h2 class="uploadMsg-title">
+                        Approve this Activity
+                    </h2>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <label>
+                                <input type="checkbox" ng-model="$ctrl.is_exceptional_check" name="is_exceptional_check" ng-true-value=1 ng-false-value=0> Mark this Approval as Exceptional</label>
+                        </div>
+                    </div>
+                    <textarea name="exceptional_reason" ng-model="$ctrl.exceptional_reason" value="{{$ctrl.exceptional_reason}}" rows="5" class="form-control" autocomplete="off" placeholder="Reason for Exceptional" id='exceptional_reason' ng-required="$ctrl.is_exceptional_check==1"></textarea>
+                    <div ng-show="myForm.$submitted || myForm.exceptional_reason.$touched">
+                        <span style="color:red" ng-show="myForm.exceptional_reason.$error.required">Exceptional reason is required.</span>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="row">
+                        <button class="btn btn-primary yellow approve_btn mt-20" type="btn" ng-click="saveApproval()">Confirm</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div id="location" class="tab-pane fade">
-            <location-details data="$ctrl.data"></location-details>
-        </div>
-        <div id="km" class="tab-pane fade">
-            <km-details data="$ctrl.data"></km-details>
-        </div>
-        <div id="invoice" class="tab-pane fade">
-            <invoice-details data="$ctrl.data"></invoice-details>
-        </div>
-        <div id="financial" class="tab-pane fade">
-            <financial-details data="$ctrl.data"></financial-details>
-        </div>
-        <div id="case" class="tab-pane fade">
-            <case-details data="$ctrl.data"></case-details>
-        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <!-- Button Loader Starts -->
+    <div class="loader-type-2 loader-hide">
+        <div class="loader-inner"></div>
+    </div>
+    <!-- Button Loader Ends -->
+</div>
     </div>
 </div><!-- pricing-table-data -->

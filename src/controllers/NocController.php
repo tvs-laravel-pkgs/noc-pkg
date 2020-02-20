@@ -44,10 +44,11 @@ class NocController extends Controller {
 			->join('configs','nocs.status_id','=','configs.id')
 			->select([
 				'nocs.id as id',
-				'nocs.number',
+				'nocs.number as number',
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
-				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
+				//DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
+				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
 			])
 			/*->where('nocs.company_id', $this->company_id)
@@ -61,14 +62,25 @@ class NocController extends Controller {
 			//dd($nocs->get());
 		return Datatables::of($nocs)
 			->addColumn('action', function ($nocs) {
-				$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
+
+				$output = '<div class="dataTable-actions wid-100">
+				<a href="#!/noc-pkg/noc/view/' . $nocs->id . '">
+					                <i class="fa fa-eye dataTable-icon--view" aria-hidden="true"></i>
+					            </a>';
+				//if (Entrust::can('delete-activities')) {
+					$output.= '<a onclick="angular.element(this).scope().deleteConfirm(' . $nocs->id . ')" href="javascript:void(0)">
+						                <i class="fa fa-trash dataTable-icon--trash cl-delete" data-cl-id =' . $nocs->id . ' aria-hidden="true"></i>
+						            </a>';
+
+				//}
+				/*$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
 				$img1_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$img_delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$img_delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
-				$output = '';
-				$output .= '<a href="#!/noc-pkg/noc/view/' . $nocs->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
+				$output = '';*/
+				/*$output .= '<a href="#!/noc-pkg/noc/view/' . $nocs->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
 					<a href="javascript:;" data-toggle="modal" data-target="#noc-delete-modal" onclick="angular.element(this).scope().deleteNoc(' . $nocs->id . ')" title="Delete"><img src="' . $img_delete . '" alt="Delete" class="img-responsive delete" onmouseover=this.src="' . $img_delete_active . '" onmouseout=this.src="' . $img_delete . '"></a>
-					';
+					';*/
 				return $output;
 			})
 			->make(true);
@@ -90,6 +102,52 @@ class NocController extends Controller {
 		$this->data['action'] = $action;
 		$this->data['theme'];
 
+		return response()->json($this->data);
+	}
+
+	public function getNocViewData($noc_id) {
+		//dd($r);
+		
+		$noc = Noc::withTrashed()->join('noc_types','nocs.type_id','=','noc_types.id')
+			->join('configs','nocs.status_id','=','configs.id')
+			->join('fy_quarters','nocs.for_id','=','fy_quarters.id')
+			->select([
+				'nocs.id as id',
+				'nocs.type_id as type_id',
+				'nocs.for_id as for_id',
+				'nocs.id as id',
+				'nocs.number as number',
+				'fy_quarters.name as quarter_name',
+				'noc_types.name as noc_type_name',
+				'configs.name as status_name',
+				DB::raw('DATE_FORMAT(fy_quarters.date,"%d-%m-%Y") as start_date'),
+				DB::raw('DATE_FORMAT(DATE_ADD(fy_quarters.date, INTERVAL +3 MONTH),"%d-%m-%Y") as end_date'),
+				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
+				//DB::raw('date(d-m-Y) as current_date'),
+				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
+			])->find($noc_id);
+		if(!$noc){
+			return response()->json(['success' => false,'errors' => ['NOC not found!!']]);
+		}
+		$this->data['noc'] = $noc;
+		$this->data['noc']['current_date'] = date('d-m-Y');
+		//$this->data['attachment'] = $attachment;
+		//$this->data['action'] = $action;
+		$this->data['success'] = true;
+		$this->data['theme'];
+
+		return response()->json($this->data);
+	}
+
+	public function sendOTP($noc_id){
+		$noc= Noc::join('asps','nocs.to_entity_id','asps.id')
+			->select('asps.contact_number1 as contact_number')
+			->where('nocs.id',$noc_id)
+			->first();
+		$otp =generateOtpNoc(9944544521);
+		$noc->otp = $otp;
+		$noc->save();
+		$this->data['success'] = true;
 		return response()->json($this->data);
 	}
 
