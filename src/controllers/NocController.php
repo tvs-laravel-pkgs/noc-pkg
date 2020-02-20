@@ -37,32 +37,36 @@ class NocController extends Controller {
 	}
 
 	public function getNocList(Request $request) {
+		//dd($this->data['theme']);
+		$this->company_id = Auth::user()->company_id;
 		$nocs = Noc::withTrashed()
 			->join('noc_types','nocs.type_id','=','noc_types.id')
+			->join('configs','nocs.status_id','=','configs.id')
 			->select([
-				'nocs.*',
-				//DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
+				'nocs.id as id',
+				'nocs.number',
+				'noc_types.name as noc_type_name',
+				'configs.name as status_name',
+				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
+				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
 			])
-			->where('nocs.company_id', $this->company_id)
+			/*->where('nocs.company_id', $this->company_id)
+			->where('nocs.for_id', $request->type_id)*/
 		/*->where(function ($query) use ($request) {
 				if (!empty($request->question)) {
 					$query->where('nocs.question', 'LIKE', '%' . $request->question . '%');
 				}
 			})*/
 			->orderby('nocs.id', 'desc');
-
+			//dd($nocs->get());
 		return Datatables::of($nocs)
-			->addColumn('name', function ($nocs) {
-				$status = $nocs->status == 'Active' ? 'green' : 'red';
-				return '<span class="status-indicator ' . $status . '"></span>' . $nocs->name;
-			})
 			->addColumn('action', function ($nocs) {
 				$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
 				$img1_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$img_delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
 				$img_delete_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-active.svg');
 				$output = '';
-				$output .= '<a href="#!/noc-pkg/noc/edit/' . $nocs->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
+				$output .= '<a href="#!/noc-pkg/noc/view/' . $nocs->id . '" id = "" ><img src="' . $img1 . '" alt="Edit" class="img-responsive" onmouseover=this.src="' . $img1_active . '" onmouseout=this.src="' . $img1 . '"></a>
 					<a href="javascript:;" data-toggle="modal" data-target="#noc-delete-modal" onclick="angular.element(this).scope().deleteNoc(' . $nocs->id . ')" title="Delete"><img src="' . $img_delete . '" alt="Delete" class="img-responsive delete" onmouseover=this.src="' . $img_delete_active . '" onmouseout=this.src="' . $img_delete . '"></a>
 					';
 				return $output;

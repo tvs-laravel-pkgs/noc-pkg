@@ -1,6 +1,6 @@
 app.component('nocList', {
     templateUrl: noc_list_template_url,
-    controller: function($http, $window, HelperService, $scope, $rootScope, $mdSelect) {
+    controller: function($http, $window, HelperService, $scope, $rootScope, $mdSelect,$routeParams) {
         $scope.loading = true;
         var self = this;
         self.hasPermission = HelperService.hasPermission;
@@ -8,9 +8,129 @@ app.component('nocList', {
         self.export_activities = export_activities;
         self.canExportActivity = canExportActivity;
         self.canImportActivity = canImportActivity;
-
         self.csrf = token;
-        $http.get(
+        /*$http({
+            url: laravel_routes['getEntityTypeData'],
+            method: 'GET',
+            params: {
+                'entity_type_id': typeof($routeParams.entity_type_id) == 'undefined' ? null : $routeParams.entity_type_id,
+            }
+        }).then(function(response) {
+            self.entity_type = response.data.entity_type;
+            self.entity_list = response.data.entity_list;
+            self.entity_list.unshift({'id' : '','name' :  'Select Entity'});
+            self.status_list = [{'id' : '','name' :  'Select Status'},{'id' : 0,'name' :  'Active'},{'id' : 1,'name' :  'Inactive'}];
+            console.log(response.data);
+            console.log(self.status_list);
+            $('.dataTables_length select').select2();
+            $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
+            $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
+            $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
+            $('.add_new_button').html(
+                '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
+                'Add ' + self.entity_type.name +
+                '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
+            );
+
+            $('.btn-add-close').on("click", function() {
+                $('#entities_list').DataTable().search('').draw();
+            });
+
+            $('.btn-refresh').on("click", function() {
+                $('#entities_list').DataTable().ajax.reload();
+            });
+
+            app.filter('removeString', function () {
+                return function (text) {
+                    var str = text.replace('s', '');
+                    return str;
+                };
+            });
+            $scope.entityChange = function(){
+                $('#entities_list').DataTable().draw();
+            }
+            $scope.entityStatus = function(){
+                $('#entities_list').DataTable().draw();
+            }
+            $scope.reset_filter = function() {
+                self.entity_data = self.status_data = '';
+                $('#entities_list').DataTable().draw();
+            }
+        });*/
+
+        var dataTable = $('#noc_table').DataTable({
+            "dom": dom_structure,
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Search",
+                "lengthMenu": "Rows Per Page _MENU_",
+                "paginate": {
+                    "next": '<i class="icon ion-ios-arrow-forward"></i>',
+                    "previous": '<i class="icon ion-ios-arrow-back"></i>'
+                },
+            },
+            stateSave: true,
+            pageLength: 10,
+            processing: true,
+            serverSide: true,
+            paging: true,
+            ordering: false,
+            ajax: {
+                url: laravel_routes['getNocList'],
+                data: function(d) {
+                    d.type_id = $routeParams.type_id;
+                    /*
+                    d.entity_id = self.entity_data;
+                    d.status_id = self.status_data;*/
+                }
+            },
+            columns: [
+                { data: 'action', searchable: false, class: 'action' },
+                { data: 'number', name: 'nocs.name', searchable: true},
+                { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
+                { data: 'status_name', name: 'configs.name', searchable: true},
+                //{ data: 'created_at', searchable: false},
+            ],
+            "infoCallback": function(settings, start, end, max, total, pre) {
+                $('#table_info').html(total + '/' + max)
+            },
+            rowCallback: function(row, data) {
+                $(row).addClass('highlight-row');
+                if(data.status=="Active")
+                {
+                  $(row).find('td:eq(1)').addClass('color-success');
+                }else 
+                {
+                  $(row).find('td:eq(1)').addClass('color-error'); 
+                }
+            },
+            initComplete: function() {
+                $('.search label input').focus();
+            },
+        });
+        //DELETE
+        $scope.deleteEntity = function($id) {
+            $('#entity_id').val($id);
+        }
+        /*$scope.deleteConfirm = function() {
+            $id = $('#entity_id').val();
+            $http.get(
+                laravel_routes['deleteEntity'], {
+                    params: {
+                        id: $id,
+                    }
+                }
+            ).then(function(response) {
+                if (response.data.success) {
+                    custom_noty('success', response.data.message);
+                    $('#entities_list').DataTable().ajax.reload();
+                    $scope.$apply();
+                } else {
+                    custom_noty('error', response.data.errors);
+                }
+            });
+        }*/
+        /*$http.get(
             noc_filter_url
         ).then(function(response) {
             self.extras = response.data.extras;
@@ -207,14 +327,14 @@ app.component('nocList', {
                 }
             });
 
-        });
+        });*/
 
     }
 });
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
 
-app.component('nocDelete', {
+/*app.component('nocDelete', {
     controller: function($http, $window, HelperService, $scope, $routeParams) {
         $.ajax({
             url: noc_delete_row + '/' + $routeParams.id,
@@ -232,11 +352,11 @@ app.component('nocDelete', {
             }
         });
     }
-});
+});*/
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
 
-app.component('nocView', {
+/*app.component('nocView', {
     templateUrl: noc_view_template_url,
     controller: function($http, $location, $window, HelperService, $scope, $routeParams, $rootScope, $location) {
         $scope.loading = true;
@@ -299,4 +419,4 @@ app.component('nocView', {
         });
 
     }
-});
+});*/

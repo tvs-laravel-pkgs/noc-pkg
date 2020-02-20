@@ -17,14 +17,15 @@
 	        template: '<noc-form></noc-form>',
 	        title: 'Add NOC',
 	    }).
-	    when('/noc-pkg/noc/edit/:id', {
-	        template: '<noc-form></noc-form>',
-	        title: 'Edit NOC',
+	    when('/noc-pkg/noc/view/:id', {
+	        template: '<noc-view></noc-view>',
+	        title: 'View NOC',
 	    });
 	}]);
 
 
     var noc_list_template_url = "{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/list.html')}}";
     var noc_form_template_url = "{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/form.html')}}";
+    var noc_view_template_url = "{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/view.html')}}";
 </script>
 <script type="text/javascript" src="{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/controller.js')}}"></script>
