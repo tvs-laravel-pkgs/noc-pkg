@@ -1,4 +1,7 @@
+@extends('layouts.app')
+@section('title', 'NOC View')
 
+@section('styles')
     <style>       
         .pdf-wrap {width: 100%;max-width: 793px;margin: 0 auto;padding-top: 20px;}
         table {font-family: 'Titillium Web', sans-serif;border-collapse: collapse;width: 100%;line-height: 1.4;margin-top: 0px;margin-bottom: 0;}
@@ -26,17 +29,21 @@
         .table-body-title {font-family: 'Titillium Web', sans-serif;font-size: 30px;font-weight: bold;line-height: normal;color: #333333;margin: 0;}
         .table-body-title-border {width: 150px;height: 3px;display: inline-block;background-color: #f0b034;}
     </style>    
+@endsection
 
-    <div class="col-xs-12 col-sm-12">
-        <div class="mobile-breadcrumbs-wrapper">
-            <ul class="mobile-breadcrumbs-group list-inline">
+@section('bread')
+	<div class="col-xs-12 col-sm-12">
+		<div class="mobile-breadcrumbs-wrapper">
+			<ul class="mobile-breadcrumbs-group list-inline">
                 <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
                 <li><a href="{{url(admin/asps)}}">ASP</a></li>
                 <li><a href="#!/noc-pkg/noc/list/{{$ctrl.noc.type_id}}">NOC</a></li>
-            </ul>
-        </div>
-    </div>
+			</ul>
+		</div>
+	</div>
+@endsection
 
+@section('content')
 <!-- Container -->
 <div class="container-fluid">
     <div class="dataTable-content--wrapper">
@@ -45,9 +52,9 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="dataTable--left_wrapper block-wrap">
-                            <h2 class="dataTable-title">NOC View</h2>                           
+                            <h2 class="dataTable-title">NOC View</h2>							
                         </div>
-                    </div><!-- Column -->       
+                    </div><!-- Column -->		
                 </div><!-- Row -->
                 <div class="row">
                     <div class="col-md-12">
@@ -93,7 +100,7 @@
                                                                         <td class="space"></td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td>Subject: Account balance confirmation as on {{$ctrl.noc.cur_date}}</td>
+                                                                        <td>Subject: Account balance confirmation as on {{$ctrl.noc.current_date}}/td>
                                                                     </tr>
                                                                     <tr>
                                                                         <td class="space"></td>
@@ -131,8 +138,7 @@
                                 </tbody>
                             </table><!-- Table Outter -->
                             <div class="text-right mt-20">
-                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id)" >CONFIRM</button>
-                                <button class="btn btn-primary yellow customForm-btn" id="downloadNoc" ng-click="downloadNoc($ctrl.noc.id)" >Download</button>
+                                <button class="btn btn-primary yellow customForm-btn" ng-click="confirmNoc($ctrl.noc.id)">CONFIRM</button>
                             </div>
                         </div><!-- PDF Wrap -->
                     </div><!-- Column -->
@@ -141,33 +147,9 @@
         </div><!-- Row -->
     </div><!-- DataTables Wrapper -->
 </div><!-- Container -->
-<div class="modal fade uploadMsg modal-bo" id="confirm-noc-modal" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content txt-center">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><img src="{{$ctrl.data.style_modal_close_image_url}}"></button>
-            </div>
-            <div class="modal-body">
-                <form novalidate id="otp_form" method="post" name="otp_form">
-                    <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
-                    <input type="hidden" name="noc_id" id="noc_id" ng-model="$ctrl.noc.id" value="{{$ctrl.noc.id}}">
-                    <h2 class="uploadMsg-title">Confirmation</h2>
-                    <h4 >Enter OTP sent to your Mobile Number:{{$ctrl.noc.contact_number}}</h4>
-                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP"  ng-maxlength="6"  ng-minlength="6">
-                    <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
-                        <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
-                        <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
-                        <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div>
-                        <button  class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
-                    </div>
-                    <div>
-                        <a class="btn-link" href="javascript:;"ng-click="confirmNoc($ctrl.noc.id)">Resend OTP</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+@endsection
+
+@section('scripts')
+ 
+    
+@endsection

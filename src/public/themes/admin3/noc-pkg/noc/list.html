@@ -2,41 +2,45 @@
     <div class="mobile-breadcrumbs-wrapper">
         <ul class="mobile-breadcrumbs-group list-inline">
             <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
-            <li><a href="#!/noc-pkg/nocs/list">NOCs</a></li>
+            <li><a href="#!/noc-pkg/nocs/list{{$ctrl.type_id}}">ASP</a></li>
+            <li><a>NOC</a></li>
         </ul>
     </div>
-</div><!-- Column -->
+</div>
 <div class="container-fluid dataTable-content--wrapper">
     <div class="row">
         <div class="col-xs-12 col-sm-12">
             <div class="row">
                 <div class="col-xs-12 col-sm-6">
                     <div class="dataTable--left_wrapper">
-                        <h2 class="dataTable-title">
-                            NOCs
-                            <a href="javascript:void(0)" class="btn-refresh" ng-click="refresh()" data-toggle="tooltip" title="Refresh">
-                                <img class="img-refresh" src="./resources/assets/images/refresh-arrow.svg" alt="Refresh" />
-                            </a>
-                        </h2>
-                        <p>Total - <span class="orange-txt"><span class="count">0</span></span></p>
+                        <h2 class="dataTable-title">NOC List</h2>
+                        <p>Total - <span class="orange-txt"><span class="count">36 / 36</span>listings</span></p>
                     </div>
                 </div>
-                
+                <div class="col-xs-12 col-sm-6">
+                    <div class="dataTable-top--right_wrapper">
+                        <ul class="dataTable-top--right_group list-inline">
+                            <li><input class="filterTable" type="text" placeholder="Search"></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="table-responsive">
-                <table id="noc_table" class="display table dataTable">
+                <table id="noc_table" class="display table dataTable no-footer">
                     <thead>
                         <tr>
-                            <th>Actions</th>
-                            <th>Case Number</th>
-                            <th>NOC Type</th>
+                            <th class="action">Actions</th>
+                            <th>Created On</th>
+                            <th>NOC #</th>
+                            <th>Type</th>
+                            <th>ASP</th>
                             <th>Status</th>
-                            <th>Created_at</th>
                         </tr>
                     </thead>
+                    <tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal -->

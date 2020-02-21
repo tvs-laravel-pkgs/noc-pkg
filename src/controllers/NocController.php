@@ -9,8 +9,12 @@ use Carbon\Carbon;
 use DB;
 use File;
 use Illuminate\Http\Request;
+use Storage;
+use PDF;
 use Validator;
 use Yajra\Datatables\Datatables;
+use Illuminate\Support\Facades\Response;
+
 
 class NocController extends Controller {
 
@@ -36,17 +40,24 @@ class NocController extends Controller {
 
 	}
 
+	public function getFilterData(){
+		$this->data['noc_type_list'] = NocType::pluck('name','id');
+
+	}
+
 	public function getNocList(Request $request) {
 		//dd($this->data['theme']);
 		$this->company_id = Auth::user()->company_id;
 		$nocs = Noc::withTrashed()
 			->join('noc_types','nocs.type_id','=','noc_types.id')
 			->join('configs','nocs.status_id','=','configs.id')
+			->join('asps','nocs.to_entity_id','asps.id')
 			->select([
 				'nocs.id as id',
 				'nocs.number as number',
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
+				'asps.name as asp_name',
 				//DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
@@ -59,8 +70,12 @@ class NocController extends Controller {
 				}
 			})*/
 			->orderby('nocs.id', 'desc');
-			//dd($nocs->get());
+			//dd($nocs->first());
 		return Datatables::of($nocs)
+			->addColumn('status_name', function ($nocs) {
+				$color_part = $nocs->status_name=='Completed' ? '':'color-warning';
+				return '<span class="status-info '.$color_part.'"></span>'.$nocs->status_name;
+			})
 			->addColumn('action', function ($nocs) {
 
 				$output = '<div class="dataTable-actions wid-100">
@@ -104,17 +119,16 @@ class NocController extends Controller {
 
 		return response()->json($this->data);
 	}
-
-	public function getNocViewData($noc_id) {
-		//dd($r);
-		
+	public static function nocData($noc_id){
 		$noc = Noc::withTrashed()->join('noc_types','nocs.type_id','=','noc_types.id')
 			->join('configs','nocs.status_id','=','configs.id')
 			->join('fy_quarters','nocs.for_id','=','fy_quarters.id')
+			->join('asps','nocs.to_entity_id','asps.id')
 			->select([
 				'nocs.id as id',
 				'nocs.type_id as type_id',
 				'nocs.for_id as for_id',
+				'nocs.status_id as status_id',
 				'nocs.id as id',
 				'nocs.number as number',
 				'fy_quarters.name as quarter_name',
@@ -122,34 +136,107 @@ class NocController extends Controller {
 				'configs.name as status_name',
 				DB::raw('DATE_FORMAT(fy_quarters.date,"%d-%m-%Y") as start_date'),
 				DB::raw('DATE_FORMAT(DATE_ADD(fy_quarters.date, INTERVAL +3 MONTH),"%d-%m-%Y") as end_date'),
+				DB::raw('DATE_FORMAT(NOW(),"%d-%m-%Y") as cur_date'),
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				//DB::raw('date(d-m-Y) as current_date'),
-				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
+				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
+				'asps.workshop_name as workshop_name',
+				DB::raw('CONCAT(asps.address_line_1,",",asps.address_line_2,",") as workshop_address'),
+				'asps.contact_number1 as contact_number',
+				'asps.name as asp_name'
+
 			])->find($noc_id);
+		
+		//$noc['current_date'] = date('d-m-Y');
+		//dd($noc);
+		return $noc;
+	}
+	public function getNocViewData($noc_id) {
+		//dd($r);
+		$this->data['noc'] = $noc = $this->nocData($noc_id);
 		if(!$noc){
 			return response()->json(['success' => false,'errors' => ['NOC not found!!']]);
 		}
-		$this->data['noc'] = $noc;
-		$this->data['noc']['current_date'] = date('d-m-Y');
+		//dd($noc);
 		//$this->data['attachment'] = $attachment;
 		//$this->data['action'] = $action;
+		/*if(){
+
+		}*/
 		$this->data['success'] = true;
 		$this->data['theme'];
 
 		return response()->json($this->data);
 	}
 
+	public function downloadNocPdf($noc_id){
+		$this->data['noc'] = $noc= $this->nocData($noc_id);
+		if(!$noc){
+			return response()->json(['success' => false,'errors' => ['NOC not found!!']]);
+		}
+		//dd($this->data['noc']);
+		
+		$filepath = 'storage/app/public/noc/' . $noc->id . '.pdf';
+		$response = Response::download($filepath);
+		ob_end_clean();
+		return $response;
+	}
+
 	public function sendOTP($noc_id){
 		$noc= Noc::join('asps','nocs.to_entity_id','asps.id')
-			->select('asps.contact_number1 as contact_number')
+			->select(
+				'nocs.id as id',
+				'asps.contact_number1 as contact_number',
+				'nocs.otp as otp'
+			)
 			->where('nocs.id',$noc_id)
 			->first();
-		$otp =generateOtpNoc(9944544521);
-		$noc->otp = $otp;
-		$noc->save();
-		$this->data['success'] = true;
-		return response()->json($this->data);
+		if($noc->contact_number){
+			if($noc->otp){
+				$otp =sendSMS2('OTP_FOR_ISSUE_NOC', 9944544521/*$noc->contact_number*/, $noc->otp);
+			}else{
+				$otp =generateOtpNoc(9944544521/*$noc->contact_number*/);
+				$noc->otp = $otp;
+				$noc->save();
+			}
+			$this->data['noc'] = $noc;
+			$this->data['success'] = true;
+			return response()->json($this->data);
+		}else{
+			return response()->json(['success' => false,'errors' => ['Invalid Contact Number']]);
+		}
 	}
+
+	public function validateOTP(Request $request){
+		//dd($request->all());
+		$noc= Noc::find($request->noc_id);
+		if($noc){
+			if($noc->otp == $request->otp){
+				$noc->status_id = 401;
+				$noc->otp = NULL;
+				//$noc->save();
+				$this->data['success'] = true;
+				$this->data['noc_id'] = $noc->id;
+				$this->data['type_id'] = $noc->type_id;
+				$this->data['noc'] = $noc= $this->nocData($noc->id);
+				if (!Storage::disk('public')->has('noc/')) {
+					Storage::disk('public')->makeDirectory('noc/');
+				}
+				$noc_path = storage_path('app/public/noc/');
+				Storage::makeDirectory($noc_path, 0777);
+				$pdf = PDF::loadView('pdf.noduec_pdf',$this->data['noc'])
+					->setPaper('a4', 'landscape');
+				$pdf->save(storage_path('app/public/noc/fds.pdf'));
+				return response()->json($this->data);
+
+			}else{
+				return response()->json(['success' => false, 'errors' => ['Invalid OTP,Please Re-Enter OTP..']]);
+			}
+		}else{
+				return response()->json(['success' => false, 'errors' => ['NOC not found!!']]);
+		}
+	}
+
 
 	public function saveNoc(Request $request) {
 		//dd($request->all());

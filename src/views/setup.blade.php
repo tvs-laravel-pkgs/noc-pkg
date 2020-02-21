@@ -28,6 +28,9 @@
     var noc_form_template_url = "{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/form.html')}}";
     var noc_view_template_url = "{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/view.html')}}";
     var noc_view_data_url = "{{url('/noc-pkg/noc/view/')}}";
-    var generate_otp = "{{url('/noc-pkg/noc/sendotp/')}}"
+    var generate_otp = "{{url('/noc-pkg/noc/sendotp/')}}";
+    var download_now_pdf ="{{url('/noc-pkg/noc/download/')}}";
+  var style_modal_close_image_url = "{{URL::asset('resources/assets/images/modal-close.svg')}}";
+    
 </script>
 <script type="text/javascript" src="{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/controller.js')}}"></script>

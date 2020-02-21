@@ -9,6 +9,8 @@ app.component('nocList', {
         self.canExportActivity = canExportActivity;
         self.canImportActivity = canImportActivity;
         self.csrf = token;
+
+        self.type_id = $routeParams.type_id;
         /*$http({
             url: laravel_routes['getEntityTypeData'],
             method: 'GET',
@@ -122,10 +124,11 @@ app.component('nocList', {
             },
             columns: [
                 { data: 'action', searchable: false, class: 'action' },
+                { data: 'create_date', searchable: false},
                 { data: 'number', name: 'nocs.name', searchable: true},
                 { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
+                { data: 'asp_name', name: 'asps.name', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
-                { data: 'create_date', searchable: false},
             ],
             "infoCallback": function(settings, start, end, max, total, pre) {
                 $('#table_info').html(total + '/' + max)
@@ -144,16 +147,24 @@ app.component('nocList', {
                 $('.search label input').focus();
             },
         });
+        $(".filterTable").keyup(function() {
+                dataTable.fnFilter(this.value);
+            });
+        $scope.openFilter = function(){
+            alert();
+            $('#filterticket').toggleClass('open');
+        };
         $('.dataTables_length select').select2();
-            $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
+        /*image_scr2 = image_scr3 ='';
+            $('.page-header-content .display-inline-block .data-table-title').html('Nocs <span class="badge badge-secondary" id="table_info">0</span>');
             $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
             $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
             $('.add_new_button').html(
-                '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-                'Add ' + self.entity_type.name +
+                '<a href="#!/entity-pkg/entity/add/' + $routeParams.type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
+                'Add ' + 's' +
                 '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
             );
-
+*/
 
         //DELETE
         /*$scope.deleteEntity = function($id) {
@@ -392,8 +403,6 @@ app.component('nocView', {
         $http.get(
             get_view_data_url
         ).then(function(response) {
-            console.log('response');
-            console.log(response);
             if (!response.data.success) {
                 var errors = '';
                 for (var i in response.data.errors) {
@@ -417,31 +426,113 @@ app.component('nocView', {
             }else{
                 self.noc = response.data.noc;
             }
-
-             
-
-            /*$('.viewData-toggle--inner.noToggle .viewData-threeColumn--wrapper').slideDown();
-            $('#viewData-toggle--btn1').click(function() {
-                $(this).toggleClass('viewData-toggle--btn_reverse');
-                $('#viewData-threeColumn--wrapper1').slideToggle();
-            });
-            $('#viewData-toggle--btnasp').click(function() {
-                $(this).toggleClass('viewData-toggle--btn_reverse');
-                $('#viewData-threeColumn--wrapperasp').slideToggle();
-            });*/
             $rootScope.loading = false;
         });
         $scope.confirmNoc = function($noc_id) {
-        generate_otp_url = generate_otp + '/'  + $noc_id;
-        console.log(generate_otp_url);
-                $http.get(
-                    generate_otp_url
-                    ).then(function(response){
-                        console.log(response);
-                });
-                $("#confirm-noc-modal").modal();
-            }
+            generate_otp_url = generate_otp + '/'  + $noc_id;
+            console.log(generate_otp_url);
+            $http.get(
+                generate_otp_url
+                ).then(function(response){
+                    console.log(response);
+                    $("#confirm-noc-modal").modal();
+            });
+        }
 
+        $scope.checkOtp = function(){
+
+            if ($scope.otp_form.$valid) {
+                    //$('.approve_btn').button('loading');
+                    if ($(".loader-type-2").hasClass("loader-hide")) {
+                        $(".loader-type-2").removeClass("loader-hide");
+                    }
+                    $http.post(
+                        laravel_routes['validateOTP'], {
+                            noc_id: self.noc.id,
+                            otp: self.otp,
+                        }
+                    ).then(function(response) {
+                        $("#confirm-noc-modal").modal("hide");
+                        //$(".loader-type-2").addClass("loader-hide");
+                        $('.approve_btn').button('reset');
+
+                        if (!response.data.success) {
+                            var errors = '';
+                            for (var i in response.data.errors) {
+                                errors += '<li>' + response.data.errors[i] + '</li>';
+                            }
+                            $noty = new Noty({
+                                type: 'error',
+                                layout: 'topRight',
+                                text: errors,
+                                animation: {
+                                    speed: 500 // unavailable - no need
+                                },
+
+                            }).show();
+                            setTimeout(function() {
+                                $noty.close();
+                            }, 2000);
+                            return;
+                        } else {
+                            $noty = new Noty({
+                                type: 'success',
+                                layout: 'topRight',
+                                text: 'NOC Accepted',
+                                animation: {
+                                    speed: 500
+                                }
+                            }).show();
+                            setTimeout(function() {
+                                $noty.close();
+                            }, 1000);
+
+                            setTimeout(function() {
+                                $location.path('/noc-pkg/noc/list/'+response.data.type_id);
+                                $scope.$apply();
+                            }, 1500);
+                        }
+                        // item.selected = false;
+                        //$scope.getChannelDiscountAmounts();
+
+                    });
+                }
+            
+        }
+
+        $scope.downloadNoc = function($noc_id){
+        //$('#downloadNoc').button('loading');
+        download_noc_pdf = download_now_pdf + '/'  + $noc_id;
+        $http.get(
+            download_noc_pdf
+        ).then(function(response) {
+            if (!response.data.success) {
+                var errors = '';
+                for (var i in response.data.errors) {
+                    errors += '<li>' + response.data.errors[i] + '</li>';
+                }
+                $noty = new Noty({
+                    type: 'error',
+                    layout: 'topRight',
+                    text: errors,
+                    animation: {
+                        speed: 500 // unavailable - no need
+                    },
+
+                }).show();
+                setTimeout(function() {
+                    $noty.close();
+                }, 1000);
+                $location.path('/noc-pkg/noc/list/1');
+                $scope.$apply();
+                return;
+            }else{
+                self.noc = response.data.noc;
+            }
+            $rootScope.loading = false;
+        });
+            
+        }
     }
 });
 
