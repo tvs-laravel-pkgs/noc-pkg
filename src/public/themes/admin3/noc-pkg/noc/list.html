@@ -2,8 +2,9 @@
     <div class="mobile-breadcrumbs-wrapper">
         <ul class="mobile-breadcrumbs-group list-inline">
             <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
-            <li><a href="#!/noc-pkg/nocs/list{{$ctrl.type_id}}">ASP</a></li>
-            <li><a>NOC</a></li>
+            <li><a href="#">ASP</a></li>
+            <li><a href="#!/noc-pkg/nocs/list{{$ctrl.type_id}}">NOC</a></li>
+            <li><a>List</a></li>
         </ul>
     </div>
 </div>
@@ -21,6 +22,66 @@
                     <div class="dataTable-top--right_wrapper">
                         <ul class="dataTable-top--right_group list-inline">
                             <li><input class="filterTable" type="text" placeholder="Search"></li>
+                            <li>
+                                <img src="<% $ctrl.filter_img_url %>" class="filterToggle" ng-click="openFilter()">
+                                <div class="filter-wrapper" id='filterticket'>
+                                    <div class="filter-overlay"></div>
+                                    <div class="filter-content">
+                                        <div class="filter-header">
+                                            <h2>Noc Filter</h2>
+                                        </div>
+                                        <div class="filter-body">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="input-text form-group">
+                                                        <label>Period</label>
+                                                        <input class="form-control customForm-input" autocomplete="off" name="period" type="text" value='' ng-model="$ctrl.period">
+                                                    </div><!-- Field -->
+                                                </div><!-- Column -->
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>NOC Type</label>
+
+                                                        <md-select ng-model="$ctrl.noc_type_id" ng-change="changeType()" placeholder="Select NOC Type">
+                                                            <md-option ng-repeat="noc_type in $ctrl.noc_type_list" value="{{noc_type.id}}">{{noc_type.name}}</md-option>
+                                                        </md-select>
+                                                        <input type="hidden" name="noc_type_id" value="" id="noc_type_id">
+                                                    </div>
+                                                </div>
+                                                <!-- <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>NOC Status</label>
+                                                        <md-select ng-model="$ctrl.noc_status_id" ng-change="changeNocStatus()" placeholder="Select NOC Status">
+                                                            <md-option ng-repeat="status in $ctrl.noc_status_list" value="{{status.id}}">{{status.name}}</md-option>
+                                                        </md-select>
+                                                    </div>
+                                                </div> -->
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>NOC Number</label>
+                                                        <input ng-model="$ctrl.noc_number" id="noc_number" class="filter-data form-control filter-input" type="text" placeholder="NOC Number" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label>ASP COde</label>
+                                                        <input ng-model="$ctrl.asp_code" id="asp_code" class="filter-data form-control filter-input" type="text" placeholder="ASP Code" autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <div class="filter-btns">
+                                                            <a href="javascript:;" class="reset-filter  btn btn-primary yellow" ng-click="resetFilter()">RESET</a>
+                                                            <a href="javascript:;" class="close-filter btn btn-primary" ng-click="closeFilter()">CLOSE</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>

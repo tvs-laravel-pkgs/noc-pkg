@@ -3,6 +3,8 @@
 namespace Abs\NocPkg;
 use Abs\Basic\Attachment;
 use Abs\NocPkg\Noc;
+use Abs\NocPkg\NocType;
+use App\Config;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -41,8 +43,9 @@ class NocController extends Controller {
 	}
 
 	public function getFilterData(){
-		$this->data['noc_type_list'] = NocType::pluck('name','id');
-
+		$this->data['noc_type_list'] = NocType::select('name','id')->get();
+		$this->data['noc_status_list'] = Config::where('entity_type_id',27)->select('name','id')->get();
+		return response()->json($this->data);
 	}
 
 	public function getNocList(Request $request) {
@@ -61,7 +64,19 @@ class NocController extends Controller {
 				//DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
-			])
+			]);
+			if($request->noc_type_id){
+				$nocs = $nocs->where('noc_types.id',$request->type_id);
+			}
+			if($request->noc_status_id){
+				$nocs = $nocs->where('configs.id',$request->noc_status_id);
+			}
+			if($request->asp_code){
+				$nocs = $nocs->where('asps.asp_code', 'like', $request->asp_code);
+			}
+			if($request->noc_number){
+				$nocs = $nocs->where('nocs.number', 'like', $request->noc_number);
+			}
 			/*->where('nocs.company_id', $this->company_id)
 			->where('nocs.for_id', $request->type_id)*/
 		/*->where(function ($query) use ($request) {
@@ -69,7 +84,7 @@ class NocController extends Controller {
 					$query->where('nocs.question', 'LIKE', '%' . $request->question . '%');
 				}
 			})*/
-			->orderby('nocs.id', 'desc');
+			$nocs =$nocs->orderby('nocs.id', 'desc');
 			//dd($nocs->first());
 		return Datatables::of($nocs)
 			->addColumn('status_name', function ($nocs) {
@@ -163,13 +178,19 @@ class NocController extends Controller {
 		/*if(){
 
 		}*/
+		$this->data['noc']['pdf_url'] ='#';
+		$this->data['noc']['pdf_download'] = false;
+		if($noc->status_id==401){
+			$this->data['noc']['pdf_url'] = 'storage/app/public/noc/'.$noc_id.'.pdf';
+			$this->data['noc']['pdf_download'] = true;
+		}
 		$this->data['success'] = true;
 		$this->data['theme'];
 
 		return response()->json($this->data);
 	}
 
-	public function downloadNocPdf($noc_id){
+	/*public function downloadNocPdf($noc_id){
 		$this->data['noc'] = $noc= $this->nocData($noc_id);
 		if(!$noc){
 			return response()->json(['success' => false,'errors' => ['NOC not found!!']]);
@@ -180,7 +201,7 @@ class NocController extends Controller {
 		$response = Response::download($filepath);
 		ob_end_clean();
 		return $response;
-	}
+	}*/
 
 	public function sendOTP($noc_id){
 		$noc= Noc::join('asps','nocs.to_entity_id','asps.id')
@@ -226,7 +247,7 @@ class NocController extends Controller {
 				Storage::makeDirectory($noc_path, 0777);
 				$pdf = PDF::loadView('pdf.noduec_pdf',$this->data['noc'])
 					->setPaper('a4', 'landscape');
-				$pdf->save(storage_path('app/public/noc/fds.pdf'));
+				$pdf->save(storage_path('app/public/noc/'.$noc->id.'.pdf'));
 				return response()->json($this->data);
 
 			}else{

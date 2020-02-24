@@ -4,6 +4,7 @@ Route::group(['namespace' => 'Abs\NocPkg', 'middleware' => ['web', 'auth'], 'pre
 	//FAQs
 	Route::get('/nocs/get-list', 'NocController@getNocList')->name('getNocList');
 	Route::get('/noc/get-form-data', 'NocController@getNocFormData')->name('getNocFormData');
+	Route::get('/noc/get-filter-data', 'NocController@getFilterData')->name('getFilterData');
 	Route::get('/noc/view/{noc_id}', 'NocController@getNocViewData')->name('getNocViewData');
 	Route::get('/noc/download/{noc_id}', 'NocController@downloadNocPdf')->name('downloadNocPdf');
 	Route::get('/noc/sendotp/{noc_id}', 'NocController@sendOTP')->name('sendOTP');

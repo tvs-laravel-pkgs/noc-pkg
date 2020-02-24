@@ -30,6 +30,7 @@
     var noc_view_data_url = "{{url('/noc-pkg/noc/view/')}}";
     var generate_otp = "{{url('/noc-pkg/noc/sendotp/')}}";
     var download_now_pdf ="{{url('/noc-pkg/noc/download/')}}";
+    var get_filter_data ="{{url('/noc-pkg/noc/get-filter-data/')}}";
   var style_modal_close_image_url = "{{URL::asset('resources/assets/images/modal-close.svg')}}";
     
 </script>

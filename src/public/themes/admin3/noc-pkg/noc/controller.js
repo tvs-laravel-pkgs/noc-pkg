@@ -95,7 +95,15 @@ app.component('nocList', {
                     }
                 });
             }
-
+            self.noc_status_id = self.noc_type_id = self.noc_number = self.asp_code ='';
+        $http.get(
+            get_filter_data
+        ).then(function(response) {
+            self.noc_type_list = response.data.noc_type_list;
+            self.noc_status_list = response.data.noc_status_list;
+            console.log(self.noc_type_list);
+            $rootScope.loading = false;
+        });
         var dataTable = $('#noc_table').DataTable({
             "dom": dom_structure,
             "language": {
@@ -117,15 +125,16 @@ app.component('nocList', {
                 url: laravel_routes['getNocList'],
                 data: function(d) {
                     d.type_id = $routeParams.type_id;
-                    /*
-                    d.entity_id = self.entity_data;
-                    d.status_id = self.status_data;*/
+                    d.noc_type_id = self.noc_type_id;
+                    d.noc_status_id = self.noc_status_id;
+                    d.noc_number = self.noc_number;
+                    d.asp_code = self.asp_code;
                 }
             },
             columns: [
                 { data: 'action', searchable: false, class: 'action' },
                 { data: 'create_date', searchable: false},
-                { data: 'number', name: 'nocs.name', searchable: true},
+                { data: 'number', name: 'nocs.number', searchable: true},
                 { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
                 { data: 'asp_name', name: 'asps.name', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
@@ -147,12 +156,32 @@ app.component('nocList', {
                 $('.search label input').focus();
             },
         });
+         var dataTable = $('#noc_table').dataTable();
         $(".filterTable").keyup(function() {
                 dataTable.fnFilter(this.value);
-            });
+        });
+        $(".filter-data").keyup(function() {
+                dataTable.fnFilter();
+        });
+        $scope.changeType = function(){
+           
+             dataTable.fnFilter();
+        };
+        $scope.changeNocStatus = function(){
+             dataTable.fnFilter();
+        };
         $scope.openFilter = function(){
-            alert();
             $('#filterticket').toggleClass('open');
+        };
+        $scope.closeFilter = function(){
+            $('#filterticket').removeClass('open');
+        };
+        $scope.resetFilter =function(){
+            self.noc_type_id = '';
+            self.noc_status_id = '';
+            self.noc_number = '';
+            self.asp_code = '';
+            dataTable.fnFilter();
         };
         $('.dataTables_length select').select2();
         /*image_scr2 = image_scr3 ='';

@@ -132,7 +132,7 @@
                             </table><!-- Table Outter -->
                             <div class="text-right mt-20">
                                 <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id)" >CONFIRM</button>
-                                <button class="btn btn-primary yellow customForm-btn" id="downloadNoc" ng-click="downloadNoc($ctrl.noc.id)" >Download</button>
+                                <a href="{{$ctrl.noc.pdf_url}}" download class="btn btn-primary yellow customForm-btn">Download</a>
                             </div>
                         </div><!-- PDF Wrap -->
                     </div><!-- Column -->
