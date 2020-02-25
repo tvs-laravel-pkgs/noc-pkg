@@ -59,6 +59,15 @@ app.component('nocList', {
                 $('#entities_list').DataTable().draw();
             }
         });*/
+        $('.date-picker').datepicker({
+                format: 'dd-mm-yyyy',
+                autoclose: true,
+            });
+        $('input[name="period"]').daterangepicker({
+                startDate: moment().startOf('month'),
+                endDate: moment().endOf('month'),
+            });
+
         $scope.deleteConfirm = function($id) {
                 bootbox.confirm({
                     message: 'Do you want to delete this activity?',
@@ -99,7 +108,9 @@ app.component('nocList', {
         $http.get(
             get_filter_data
         ).then(function(response) {
+            console.log(response.data);
             self.noc_type_list = response.data.noc_type_list;
+            //self.noc_type_list = noc_type_list.unshift({'name':'Select Noc Type List','id':''} ); 
             self.noc_status_list = response.data.noc_status_list;
             console.log(self.noc_type_list);
             $rootScope.loading = false;
@@ -129,6 +140,7 @@ app.component('nocList', {
                     d.noc_status_id = self.noc_status_id;
                     d.noc_number = self.noc_number;
                     d.asp_code = self.asp_code;
+                    d.period = self.period;
                 }
             },
             columns: [
@@ -139,8 +151,8 @@ app.component('nocList', {
                 { data: 'asp_name', name: 'asps.name', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
             ],
-            "infoCallback": function(settings, start, end, max, total, pre) {
-                $('#table_info').html(total + '/' + max)
+            infoCallback: function(settings, start, end, max, total, pre) {
+                $('.count').html(total + ' / ' + max + ' listings')
             },
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
@@ -152,6 +164,7 @@ app.component('nocList', {
                   $(row).find('td:eq(1)').addClass('color-error'); 
                 }
             },
+
             initComplete: function() {
                 $('.search label input').focus();
             },
@@ -181,6 +194,7 @@ app.component('nocList', {
             self.noc_status_id = '';
             self.noc_number = '';
             self.asp_code = '';
+            self.period = '';
             dataTable.fnFilter();
         };
         $('.dataTables_length select').select2();

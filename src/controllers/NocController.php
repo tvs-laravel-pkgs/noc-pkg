@@ -49,8 +49,13 @@ class NocController extends Controller {
 	}
 
 	public function getNocList(Request $request) {
-		//dd($this->data['theme']);
+		//dd( $request->all());
 		$this->company_id = Auth::user()->company_id;
+		if($request->period){
+			$date = explode("-", $request->period);
+			$range1 = date("Y-m-d", strtotime($date[0]));
+			$range2 = date("Y-m-d", strtotime($date[1]));
+		}
 		$nocs = Noc::withTrashed()
 			->join('noc_types','nocs.type_id','=','noc_types.id')
 			->join('configs','nocs.status_id','=','configs.id')
@@ -76,6 +81,11 @@ class NocController extends Controller {
 			}
 			if($request->noc_number){
 				$nocs = $nocs->where('nocs.number', 'like', $request->noc_number);
+			}
+			if($request->period){
+				//dd($request->period,$range1,$range2);
+				$nocs = $nocs->whereDate('nocs.created_at', '>=', $range1)
+				->whereDate('nocs.created_at', '<=', $range2);
 			}
 			/*->where('nocs.company_id', $this->company_id)
 			->where('nocs.for_id', $request->type_id)*/
@@ -139,6 +149,9 @@ class NocController extends Controller {
 			->join('configs','nocs.status_id','=','configs.id')
 			->join('fy_quarters','nocs.for_id','=','fy_quarters.id')
 			->join('asps','nocs.to_entity_id','asps.id')
+			->rightJoin('states','states.id','asps.state_id')
+			->leftJoin('locations','asps.location_id','locations.id')
+			->leftJoin('districts','asps.district_id','districts.id')
 			->select([
 				'nocs.id as id',
 				'nocs.type_id as type_id',
@@ -150,16 +163,15 @@ class NocController extends Controller {
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
 				DB::raw('DATE_FORMAT(fy_quarters.date,"%d-%m-%Y") as start_date'),
-				DB::raw('DATE_FORMAT(DATE_ADD(fy_quarters.date, INTERVAL +3 MONTH),"%d-%m-%Y") as end_date'),
+				DB::raw('DATE_FORMAT(LAST_DAY(DATE_ADD(fy_quarters.date, INTERVAL +2 MONTH)),"%d-%m-%Y") as end_date'),
 				DB::raw('DATE_FORMAT(NOW(),"%d-%m-%Y") as cur_date'),
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				//DB::raw('date(d-m-Y) as current_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
 				'asps.workshop_name as workshop_name',
-				DB::raw('CONCAT(asps.address_line_1,",",asps.address_line_2,",") as workshop_address'),
+				DB::raw('CONCAT(asps.address_line_1,",",asps.address_line_2,IF(asps.location_id !=NULL,CONCAT(",",locations.name),""),IF(asps.district_id !=NULL,CONCAT(",",districts.name),""),IF(asps.state_id !=NULL,CONCAT(",",states.name),""),IF(asps.zip_code !=NULL,CONCAT(",",asps.zip_code),"")) as workshop_address'),
 				'asps.contact_number1 as contact_number',
 				'asps.name as asp_name'
-
 			])->find($noc_id);
 		
 		//$noc['current_date'] = date('d-m-Y');
@@ -235,7 +247,7 @@ class NocController extends Controller {
 			if($noc->otp == $request->otp){
 				$noc->status_id = 401;
 				$noc->otp = NULL;
-				//$noc->save();
+				$noc->save();
 				$this->data['success'] = true;
 				$this->data['noc_id'] = $noc->id;
 				$this->data['type_id'] = $noc->type_id;
@@ -245,9 +257,10 @@ class NocController extends Controller {
 				}
 				$noc_path = storage_path('app/public/noc/');
 				Storage::makeDirectory($noc_path, 0777);
-				$pdf = PDF::loadView('pdf.noduec_pdf',$this->data['noc'])
-					->setPaper('a4', 'landscape');
+				$pdf = PDF::loadView('pdf/noduec_pdf',$this->data)
+					->setPaper('a4', 'portrait');
 				$pdf->save(storage_path('app/public/noc/'.$noc->id.'.pdf'));
+
 				return response()->json($this->data);
 
 			}else{
