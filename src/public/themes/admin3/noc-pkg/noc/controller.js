@@ -149,7 +149,7 @@ app.component('nocList', {
                 { data: 'create_date', searchable: false},
                 { data: 'number', name: 'nocs.number', searchable: true},
                 { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
-                { data: 'asp_name', name: 'asps.name', searchable: true},
+                { data: 'asp_code', name: 'asps.asp_code', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
             ],
             infoCallback: function(settings, start, end, max, total, pre) {

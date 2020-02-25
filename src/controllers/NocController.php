@@ -68,6 +68,7 @@ class NocController extends Controller {
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
 				'asps.name as asp_name',
+				'asps.asp_code as asp_code',
 				//DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y") as created_at'),
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
@@ -179,6 +180,7 @@ class NocController extends Controller {
 				'fy_quarters.name as quarter_name',
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
+				'asps.asp_code as asp_code',
 				DB::raw('DATE_FORMAT(fy_quarters.date,"%d-%m-%Y") as start_date'),
 				DB::raw('DATE_FORMAT(LAST_DAY(DATE_ADD(fy_quarters.date, INTERVAL +2 MONTH)),"%d-%m-%Y") as end_date'),
 				DB::raw('DATE_FORMAT(NOW(),"%d-%m-%Y") as cur_date'),
@@ -208,6 +210,7 @@ class NocController extends Controller {
 
 		}*/
 		$this->data['noc']['pdf_url'] ='#';
+		$this->data['noc']['can_confirm'] =Entrust::can('view-own-noc');
 		$this->data['noc']['pdf_download'] = false;
 		if($noc->status_id==401){
 			$this->data['noc']['pdf_url'] = 'storage/app/public/noc/'.$noc_id.'.pdf';
@@ -263,6 +266,7 @@ class NocController extends Controller {
 		if($noc){
 			if($noc->otp == $request->otp){
 				$noc->status_id = 401;
+				$noc->updated_at = date("Y-m-d H:i:S");
 				$noc->otp = NULL;
 				$noc->save();
 				$this->data['success'] = true;
