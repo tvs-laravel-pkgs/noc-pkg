@@ -16,6 +16,8 @@ use PDF;
 use Validator;
 use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Response;
+use Entrust;
+
 
 
 class NocController extends Controller {
@@ -70,6 +72,21 @@ class NocController extends Controller {
 				DB::raw('DATE_FORMAT(nocs.created_at,"%d-%m-%Y %H:%i:%s") as create_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status')
 			]);
+			if(Entrust::can('view-mapped-state-noc')){
+				$states = StateUser::where('user_id', '=', Auth::id())->pluck('state_id');
+				$statesid = $states->toArray();
+				$nocs = $nocs->whereIn('nocs.state_id',$statesid);
+			}elseif(Entrust::can('view-own-noc')){
+				$nocs = $nocs->where('nocs.to_entity_id',Auth::id());
+			}elseif(Entrust::can('rm-based-noc')){
+				$nocs = $nocs->where('asps.regional_manager_id',Auth::user()->id);
+			}/*elseif(Entrust::can('nm-based-noc')){
+				$nocs = $nocs->where('asps.nm_id',Auth::user()->id);
+			}elseif(Entrust::can('zm-based-noc')){
+				$nocs = $nocs->where('asps.zm_id',Auth::user()->id);
+			}*/elseif(Entrust::can('view-all-noc')){
+				$nocs = $nocs;
+			}
 			if($request->noc_type_id){
 				$nocs = $nocs->where('noc_types.id',$request->type_id);
 			}

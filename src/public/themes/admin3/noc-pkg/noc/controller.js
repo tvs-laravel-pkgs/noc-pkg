@@ -9,6 +9,7 @@ app.component('nocList', {
         self.canExportActivity = canExportActivity;
         self.canImportActivity = canImportActivity;
         self.csrf = token;
+        self.style_modal_close_image_url = style_modal_close_image_url;
 
         self.type_id = $routeParams.type_id;
         /*$http({

@@ -37,6 +37,43 @@ class NocPkgPermissionSeeder extends Seeder {
 				'name' => 'delete-noc',
 				'display_name' => 'Delete',
 			],
+			[
+				'display_order' => 4,
+				'parent' => 'nocs',
+				'name' => 'view-all-noc',
+				'display_name' => 'View All',
+			],
+			[
+				'display_order' => 5,
+				'parent' => 'nocs',
+				'name' => 'view-mapped-state-noc',
+				'display_name' => 'Only State Mapped',
+			],
+			[
+				'display_order' => 6,
+				'parent' => 'nocs',
+				'name' => 'view-own-noc',
+				'display_name' => 'View Only Own',
+			],
+			[
+				'display_order' => 7,
+				'parent' => 'nocs',
+				'name' => 'rm-based-noc',
+				'display_name' => 'RM Based',
+			],
+			[
+				'display_order' => 8,
+				'parent' => 'nocs',
+				'name' => 'zm-based-noc',
+				'display_name' => 'ZM Based',
+			],
+			[
+				'display_order' => 9,
+				'parent' => 'nocs',
+				'name' => 'nm-based-noc',
+				'display_name' => 'NM Based',
+			],
+
 
 			//NOC Types
 			[
