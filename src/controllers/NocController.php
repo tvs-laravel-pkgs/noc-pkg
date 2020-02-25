@@ -226,9 +226,9 @@ class NocController extends Controller {
 			->first();
 		if($noc->contact_number){
 			if($noc->otp){
-				$otp =sendSMS2('OTP_FOR_ISSUE_NOC', 9944544521/*$noc->contact_number*/, $noc->otp);
+				$otp =sendSMS2('OTP_FOR_ISSUE_NOC', $noc->contact_number, $noc->otp);
 			}else{
-				$otp =generateOtpNoc(9944544521/*$noc->contact_number*/);
+				$otp =generateOtpNoc($noc->contact_number);
 				$noc->otp = $otp;
 				$noc->save();
 			}

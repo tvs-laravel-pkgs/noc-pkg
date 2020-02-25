@@ -158,7 +158,8 @@
         </div><!-- Row -->
     </div><!-- DataTables Wrapper -->
 </div><!-- Container -->
-<div class="modal fade uploadMsg modal-bo" id="confirm-noc-modal" role="dialog">
+
+<div class="modal fade modal-bo" id="confirm-noc-modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content txt-center">
             <div class="modal-header">
@@ -168,21 +169,28 @@
                 <form novalidate id="otp_form" method="post" name="otp_form">
                     <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
                     <input type="hidden" name="noc_id" id="noc_id" ng-model="$ctrl.noc.id" value="{{$ctrl.noc.id}}">
-                    <h2 class="uploadMsg-title">Confirmation</h2>
+                    <h2 class="uploadMsg-title">CONFIRMATION</h2>
                     <h4 >Enter OTP sent to your Mobile Number:{{$ctrl.noc.contact_number}}</h4>
-                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP"  ng-maxlength="6"  ng-minlength="6">
-                    <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
-                        <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
-                        <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
-                        <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
+                        <div class="mt-30"></div>
+                    <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="form-group">
+                                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP"  ng-maxlength="6"  ng-minlength="6">
+                                </div>
+                                <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
+                                    <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
+                                    <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
+                                    <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    <div class="text-center">
+                            <button class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
                     </div>
-                    <div class="clearfix"></div>
-                    <div>
-                        <button  class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
-                    </div>
-                    <div>
-                        <a class="btn-link" href="javascript:;"ng-click="confirmNoc($ctrl.noc.id)">Resend OTP</a>
-                    </div>
+                     <div class="text-center">
+                            <a class="btn-link" href="javascript:;"ng-click="confirmNoc($ctrl.noc.id)">Re-Send OTP</a>
+                        </div>
                 </form>
             </div>
         </div>
