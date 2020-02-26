@@ -95,10 +95,10 @@ class NocController extends Controller {
 				$nocs = $nocs->where('configs.id',$request->noc_status_id);
 			}
 			if($request->asp_code){
-				$nocs = $nocs->where('asps.asp_code', 'like', $request->asp_code);
+				$nocs = $nocs->where('asps.asp_code', 'like', '%' . $request->asp_code . '%' );
 			}
 			if($request->noc_number){
-				$nocs = $nocs->where('nocs.number', 'like', $request->noc_number);
+				$nocs = $nocs->where('nocs.number', 'like', '%' . $request->noc_number . '%');
 			}
 			if($request->period){
 				//dd($request->period,$range1,$range2);

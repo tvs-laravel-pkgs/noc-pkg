@@ -10,56 +10,7 @@ app.component('nocList', {
         self.canImportActivity = canImportActivity;
         self.csrf = token;
         self.style_modal_close_image_url = style_modal_close_image_url;
-
         self.type_id = $routeParams.type_id;
-        /*$http({
-            url: laravel_routes['getEntityTypeData'],
-            method: 'GET',
-            params: {
-                'entity_type_id': typeof($routeParams.entity_type_id) == 'undefined' ? null : $routeParams.entity_type_id,
-            }
-        }).then(function(response) {
-            self.entity_type = response.data.entity_type;
-            self.entity_list = response.data.entity_list;
-            self.entity_list.unshift({'id' : '','name' :  'Select Entity'});
-            self.status_list = [{'id' : '','name' :  'Select Status'},{'id' : 0,'name' :  'Active'},{'id' : 1,'name' :  'Inactive'}];
-            console.log(response.data);
-            console.log(self.status_list);
-            $('.dataTables_length select').select2();
-            $('.page-header-content .display-inline-block .data-table-title').html(self.entity_type.name +' <span class="badge badge-secondary" id="table_info">0</span>');
-            $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-            $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-            $('.add_new_button').html(
-                '<a href="#!/entity-pkg/entity/add/' + $routeParams.entity_type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-                'Add ' + self.entity_type.name +
-                '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
-            );
-
-            $('.btn-add-close').on("click", function() {
-                $('#entities_list').DataTable().search('').draw();
-            });
-
-            $('.btn-refresh').on("click", function() {
-                $('#entities_list').DataTable().ajax.reload();
-            });
-
-            app.filter('removeString', function () {
-                return function (text) {
-                    var str = text.replace('s', '');
-                    return str;
-                };
-            });
-            $scope.entityChange = function(){
-                $('#entities_list').DataTable().draw();
-            }
-            $scope.entityStatus = function(){
-                $('#entities_list').DataTable().draw();
-            }
-            $scope.reset_filter = function() {
-                self.entity_data = self.status_data = '';
-                $('#entities_list').DataTable().draw();
-            }
-        });*/
         $('.date-picker').datepicker({
                 format: 'dd-mm-yyyy',
                 autoclose: true,
@@ -111,12 +62,73 @@ app.component('nocList', {
         ).then(function(response) {
             console.log(response.data);
             self.noc_type_list = response.data.noc_type_list;
-            //self.noc_type_list = noc_type_list.unshift({'name':'Select Noc Type List','id':''} ); 
             self.noc_status_list = response.data.noc_status_list;
             console.log(self.noc_type_list);
             $rootScope.loading = false;
         });
-        var dataTable = $('#noc_table').DataTable({
+            var activities_status_dt_config = JSON.parse(JSON.stringify(dt_config));
+        var dataTable = $('#noc_table').DataTable(
+
+            $.extend(activities_status_dt_config, {
+                    ordering: false,
+                    processing: true,
+                    serverSide: true,
+                    "scrollX": true,
+                    stateSave: true,
+                    stateSaveCallback: function(settings, data) {
+                        localStorage.setItem('SIDataTables_' + settings.sInstance, JSON.stringify(data));
+                    },
+                    stateLoadCallback: function(settings) {
+                        var state_save_val = JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
+                        if (state_save_val) {
+                            $('.filterTable').val(state_save_val.search.search);
+                        }
+                        return JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
+                    },
+                           ajax: {
+                        url: laravel_routes['getNocList'],
+                        data: function(d) {
+                            d.type_id = $routeParams.type_id;
+                            d.noc_type_id = self.noc_type_id;
+                            d.noc_status_id = self.noc_status_id;
+                            d.noc_number = self.noc_number;
+                            d.asp_code = self.asp_code;
+                            d.period = self.period;
+                        }
+                    },
+                    columns: [
+                        { data: 'action', searchable: false, class: 'action' },
+                        { data: 'create_date', searchable: false},
+                        { data: 'number', name: 'nocs.number', searchable: true},
+                        { data: 'noc_type_name', name: 'noc_types.name', searchable: true},
+                        { data: 'asp_code', name: 'asps.asp_code', searchable: true},
+                        { data: 'status_name', name: 'configs.name', searchable: true},
+                    ],
+                    rowCallback: function(row, data) {
+                $(row).addClass('highlight-row');
+                if(data.status=="Active")
+                {
+                  $(row).find('td:eq(1)').addClass('color-success');
+                }else 
+                {
+                  $(row).find('td:eq(1)').addClass('color-error'); 
+                }
+            },
+
+            initComplete: function() {
+                $('.search label input').focus();
+            },
+                    infoCallback: function(settings, start, end, max, total, pre) {
+                        $('.count').html(total + ' / ' + max + ' listings')
+                    },
+                }));
+
+
+       /* {
+            infoCallback: function(settings, start, end, max, total, pre) {
+                console.log('sss');
+                $('.count').html(total + ' / ' + max + ' listings');
+            },
             "dom": dom_structure,
             "language": {
                 "search": "",
@@ -133,6 +145,7 @@ app.component('nocList', {
             serverSide: true,
             paging: true,
             ordering: false,
+            info: true,
             ajax: {
                 url: laravel_routes['getNocList'],
                 data: function(d) {
@@ -152,9 +165,7 @@ app.component('nocList', {
                 { data: 'asp_code', name: 'asps.asp_code', searchable: true},
                 { data: 'status_name', name: 'configs.name', searchable: true},
             ],
-            infoCallback: function(settings, start, end, max, total, pre) {
-                $('.count').html(total + ' / ' + max + ' listings')
-            },
+            
             rowCallback: function(row, data) {
                 $(row).addClass('highlight-row');
                 if(data.status=="Active")
@@ -169,7 +180,7 @@ app.component('nocList', {
             initComplete: function() {
                 $('.search label input').focus();
             },
-        });
+        });*/
          var dataTable = $('#noc_table').dataTable();
         $(".filterTable").keyup(function() {
                 dataTable.fnFilter(this.value);
@@ -199,237 +210,6 @@ app.component('nocList', {
             dataTable.fnFilter();
         };
         $('.dataTables_length select').select2();
-        /*image_scr2 = image_scr3 ='';
-            $('.page-header-content .display-inline-block .data-table-title').html('Nocs <span class="badge badge-secondary" id="table_info">0</span>');
-            $('.page-header-content .search.display-inline-block .add_close_button').html('<button type="button" class="btn btn-img btn-add-close"><img src="' + image_scr2 + '" class="img-responsive"></button>');
-            $('.page-header-content .refresh.display-inline-block').html('<button type="button" class="btn btn-refresh"><img src="' + image_scr3 + '" class="img-responsive"></button>');
-            $('.add_new_button').html(
-                '<a href="#!/entity-pkg/entity/add/' + $routeParams.type_id + '" type="button" class="btn btn-secondary" dusk="add-btn">' +
-                'Add ' + 's' +
-                '</a>  <button class="btn btn-secondary" data-toggle="modal" data-target="#entity-filter-modal"><i class="icon ion-md-funnel"></i>Filter</button>'
-            );
-*/
-
-        //DELETE
-        /*$scope.deleteEntity = function($id) {
-            $('#entity_id').val($id);
-        }*/
-        /*$scope.deleteConfirm = function() {
-            $id = $('#entity_id').val();
-            $http.get(
-                laravel_routes['deleteEntity'], {
-                    params: {
-                        id: $id,
-                    }
-                }
-            ).then(function(response) {
-                if (response.data.success) {
-                    custom_noty('success', response.data.message);
-                    $('#entities_list').DataTable().ajax.reload();
-                    $scope.$apply();
-                } else {
-                    custom_noty('error', response.data.errors);
-                }
-            });
-        }*/
-        /*$http.get(
-            noc_filter_url
-        ).then(function(response) {
-            self.extras = response.data.extras;
-            // response.data.extras.status_list.splice(0, 1);
-            self.status_list = response.data.extras.portal_status_list;
-            // self.status_list.splice(0, 1);
-            self.modal_close = modal_close;
-            var cols = [
-                { data: 'action', searchable: false },
-                { data: 'case_date', searchable: false },
-                { data: 'number', name: 'cases.number', searchable: true },
-                { data: 'asp_code', name: 'asps.asp_code', searchable: true },
-                { data: 'crm_activity_id', searchable: false },
-                { data: 'source', name: 'configs.name', searchable: true },
-                // { data: 'activity_number', name: 'activities.number', searchable: true },
-                { data: 'sub_service', name: 'service_types.name', searchable: true },
-                { data: 'finance_status', name: 'activity_finance_statuses.name', searchable: true },
-                // { data: 'asp_status', name: 'activity_asp_statuses.name', searchable: true },
-                { data: 'status', name: 'activity_portal_statuses.name', searchable: true },
-                { data: 'noc', name: 'noces.name', searchable: true },
-                { data: 'client', name: 'clients.name', searchable: true },
-                { data: 'call_center', name: 'call_centers.name', searchable: true },
-            ];
-
-            var activities_status_dt_config = JSON.parse(JSON.stringify(dt_config));
-
-            $('#activities_status_table').DataTable(
-                $.extend(activities_status_dt_config, {
-                    columns: cols,
-                    ordering: false,
-                    processing: true,
-                    serverSide: true,
-                    "scrollX": true,
-                    stateSave: true,
-                    stateSaveCallback: function(settings, data) {
-                        localStorage.setItem('SIDataTables_' + settings.sInstance, JSON.stringify(data));
-                    },
-                    stateLoadCallback: function(settings) {
-                        var state_save_val = JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
-                        if (state_save_val) {
-                            $('.filterTable').val(state_save_val.search.search);
-                        }
-                        return JSON.parse(localStorage.getItem('SIDataTables_' + settings.sInstance));
-                    },
-                    ajax: {
-                        url: noc_get_list_url,
-                        data: function(d) {
-                            d.ticket_date = $('#ticket_date').val();
-                            d.call_center_id = $('#call_center_id').val();
-                            d.case_number = $('#case_number').val();
-                            d.asp_code = $('#asp_code').val();
-                            d.service_type_id = $('#service_type_id').val();
-                            d.finance_status_id = $('#finance_status_id').val();
-                            d.status_id = $('#status_id').val();
-                            d.noc_id = $('#noc_id').val();
-                            d.client_id = $('#client_id').val();
-                        }
-                    },
-                    infoCallback: function(settings, start, end, max, total, pre) {
-                        $('.count').html(total + ' / ' + max + ' listings')
-                    },
-                    initComplete: function() {},
-                }));
-            $('.dataTables_length select').select2();
-
-            var dataTable = $('#activities_status_table').dataTable();
-
-            $(".filterTable").keyup(function() {
-                dataTable.fnFilter(this.value);
-            });
-
-            $('#ticket_date').on('change', function() {
-                dataTable.fnFilter();
-            });
-
-            $('#case_number,#asp_code').on('keyup', function() {
-                dataTable.fnFilter();
-            });
-
-            $scope.changeCommonFilter = function(val, id) {
-                $('#' + id).val(val);
-                dataTable.fnFilter();
-            };
-
-            $scope.resetFilter = function() {
-                self.ticket_filter = [];
-                $('#call_center_id').val('');
-                $('#service_type_id').val('');
-                $('#finance_status_id').val('');
-                $('#status_id').val('');
-                $('#noc_id').val('');
-                $('#client_id').val('');
-
-                setTimeout(function() {
-                    dataTable.fnFilter();
-                    $('#activities_status_table').DataTable().ajax.reload();
-                }, 1000);
-            };
-
-            $scope.refresh = function() {
-                $('#activities_status_table').DataTable().ajax.reload();
-            };
-
-            $scope.deleteConfirm = function($id) {
-                bootbox.confirm({
-                    message: 'Do you want to delete this activity?',
-                    className: 'action-confirm-modal',
-                    buttons: {
-                        confirm: {
-                            label: 'Yes',
-                            className: 'btn-success'
-                        },
-                        cancel: {
-                            label: 'No',
-                            className: 'btn-danger'
-                        }
-                    },
-                    callback: function(result) {
-                        if (result) {
-                            $window.location.href = noc_delete_url + '/' + $id;
-                        }
-                    }
-                });
-            }
-            $('.filterToggle').click(function() {
-                $('#filterticket').toggleClass('open');
-            });
-
-            $('.close-filter, .filter-overlay').click(function() {
-                $(this).parents('.filter-wrapper').removeClass('open');
-            });
-
-            $('.date-picker').datepicker({
-                format: 'dd-mm-yyyy',
-                autoclose: true,
-            });
-            $('input[name="period"]').daterangepicker({
-                startDate: moment().startOf('month'),
-                endDate: moment().endOf('month'),
-            });
-
-            self.pc_all = false;
-            $rootScope.loading = false;
-            window.mdSelectOnKeyDownOverride = function(event) {
-                event.stopPropagation();
-            };
-            $('.filter-content, .modal-dialog, #asp_excel_export').bind('click', function(event) {
-                if ($('.md-select-menu-container').hasClass('md-active')) {
-                    $mdSelect.hide();
-                }
-            });
-            $scope.changeStatus = function(ids) {
-                console.log(ids);
-                if (ids) {
-                    $size_rids = ids.length;
-                    if ($size_rids > 0) {
-                        $('#pc_sel_all').addClass('pc_sel_all');
-                    }
-                } else {
-                    $('#pc_sel_all').removeClass('pc_sel_all');
-                }
-            }
-            $scope.selectAll = function(val) {
-                self.pc_all = (!self.pc_all);
-                if (!val) {
-                    r_list = [];
-                    angular.forEach(self.extras.status_list, function(value, key) {
-                        r_list.push(value.id);
-                    });
-
-                    $('#pc_sel_all').addClass('pc_sel_all');
-                } else {
-                    r_list = [];
-                    $('#pc_sel_all').removeClass('pc_sel_all');
-                }
-                self.status_ids = r_list;
-            }
-            $("form[name='export_excel_form']").validate({
-                rules: {
-                    status_ids: {
-                        required: true,
-                    },
-                    period: {
-                        required: true,
-                    }
-                },
-                messages: {
-                    period: "Please Select Period",
-                    status_ids: "Please Select Activity Status",
-                },
-
-                submitHandler: function(form) {
-                    form.submit();
-                }
-            });
-
-        });*/
 
     }
 });
@@ -474,11 +254,9 @@ app.component('nocView', {
         });
         $scope.confirmNoc = function($noc_id) {
             generate_otp_url = generate_otp + '/'  + $noc_id;
-            console.log(generate_otp_url);
             $http.get(
                 generate_otp_url
                 ).then(function(response){
-                    console.log(response);
                     $("#confirm-noc-modal").modal();
             });
         }
@@ -536,9 +314,6 @@ app.component('nocView', {
                                 $scope.$apply();
                             }, 1500);
                         }
-                        // item.selected = false;
-                        //$scope.getChannelDiscountAmounts();
-
                     });
                 }
             
