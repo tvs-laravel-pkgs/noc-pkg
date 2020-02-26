@@ -120,17 +120,17 @@ class NocController extends Controller {
 				return '<span class="status-info '.$color_part.'"></span>'.$nocs->status_name;
 			})
 			->addColumn('action', function ($nocs) {
-
-				$output = '<div class="dataTable-actions wid-100">
+					$output = '<div class="dataTable-actions wid-100">
 				<a href="#!/noc-pkg/noc/view/' . $nocs->id . '">
 					                <i class="fa fa-eye dataTable-icon--view" aria-hidden="true"></i>
 					            </a>';
-				//if (Entrust::can('delete-activities')) {
+				
+				if (Entrust::can('delete-noc')) {
 					$output.= '<a onclick="angular.element(this).scope().deleteConfirm(' . $nocs->id . ')" href="javascript:void(0)">
 						                <i class="fa fa-trash dataTable-icon--trash cl-delete" data-cl-id =' . $nocs->id . ' aria-hidden="true"></i>
 						            </a>';
 
-				//}
+				}
 				/*$img1 = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow.svg');
 				$img1_active = asset('public/themes/' . $this->data['theme'] . '/img/content/table/edit-yellow-active.svg');
 				$img_delete = asset('public/themes/' . $this->data['theme'] . '/img/content/table/delete-default.svg');
