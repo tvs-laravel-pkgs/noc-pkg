@@ -78,13 +78,13 @@ class NocController extends Controller {
 				$statesid = $states->toArray();
 				$nocs = $nocs->whereIn('nocs.state_id',$statesid);
 			}elseif(Entrust::can('view-own-noc')){
-				$nocs = $nocs->where('nocs.to_entity_id',Auth::id());
+				$nocs = $nocs->where('nocs.to_entity_id',Auth::user()->entity_id);
 			}elseif(Entrust::can('rm-based-noc')){
-				$nocs = $nocs->where('asps.regional_manager_id',Auth::user()->id);
+				$nocs = $nocs->where('asps.regional_manager_id',Auth::user()->entity_id);
 			}/*elseif(Entrust::can('nm-based-noc')){
-				$nocs = $nocs->where('asps.nm_id',Auth::user()->id);
+				$nocs = $nocs->where('asps.nm_id',Auth::user()->entity_id);
 			}elseif(Entrust::can('zm-based-noc')){
-				$nocs = $nocs->where('asps.zm_id',Auth::user()->id);
+				$nocs = $nocs->where('asps.zm_id',Auth::user()->entity_id);
 			}*/elseif(Entrust::can('view-all-noc')){
 				$nocs = $nocs;
 			}
@@ -188,7 +188,7 @@ class NocController extends Controller {
 				//DB::raw('date(d-m-Y) as current_date'),
 				DB::raw('IF(nocs.deleted_at IS NULL, "Active","Inactive") as status'),
 				'asps.workshop_name as workshop_name',
-				DB::raw('CONCAT(asps.address_line_1,",",asps.address_line_2,IF(asps.location_id !=NULL,CONCAT(",",locations.name),""),IF(asps.district_id !=NULL,CONCAT(",",districts.name),""),IF(asps.state_id !=NULL,CONCAT(",",states.name),""),IF(asps.zip_code !=NULL,CONCAT(",",asps.zip_code),"")) as workshop_address'),
+				DB::raw('CONCAT(asps.address_line_1,",",asps.address_line_2,IF(asps.location_id IS NULL,"",CONCAT(",",locations.name)),IF(asps.district_id IS NULL,"",CONCAT(",",districts.name)),IF(asps.state_id IS NULL,"",CONCAT(",",states.name)),IF(asps.zip_code IS NULL,"",CONCAT(",",asps.zip_code,"."))) as workshop_address'),
 				'asps.contact_number1 as contact_number',
 				'asps.name as asp_name'
 			])->find($noc_id);
@@ -266,7 +266,7 @@ class NocController extends Controller {
 		if($noc){
 			if($noc->otp == $request->otp){
 				$noc->status_id = 401;
-				$noc->updated_at = date("Y-m-d H:i:S");
+				$noc->updated_at = date("Y-m-d H:i:s");
 				$noc->otp = NULL;
 				$noc->save();
 				$this->data['success'] = true;
