@@ -1,0 +1,201 @@
+
+    <style>       
+        .pdf-wrap {width: 100%;max-width: 793px;margin: 0 auto;padding-top: 20px;}
+        table {font-family: 'Titillium Web', sans-serif;border-collapse: collapse;width: 100%;line-height: 1.4;margin-top: 0px;margin-bottom: 0;}
+        table:last-child {margin-bottom: 0;} 
+        th {font-size: 12px;font-weight: bold;line-height: normal;padding: 5px;}
+        td {font-size: 12px;line-height: normal;padding: 5px;font-family: 'Titillium Web', sans-serif;}
+        .table-outter > tbody > tr > td {padding: 0;border: 1px solid #dfdfdf;}
+        .table-header > tbody > tr > td {padding: 43px 76px 42px 65px;color: #fff;background-color: #364c9c;}
+        .table-body > tbody > tr > td {padding: 36px 76px 100px 65px;}
+        .table-body-header > thead > tr > th {padding: 42px 0;text-align: center;}
+        .table-body-content {margin-top: 42px;}
+        .table-body-content > tbody > tr > td {padding: 0;font-size: 20px;font-weight: 400;}
+        .table-body-content > tbody > tr > td.space {padding-top: 15px;padding-bottom: 15px;}
+        .table-body-content > tbody > tr > td > p {font-size: 20px;line-height: 1.4;}
+
+        p {margin: 0;}
+        .mt-20 {margin-top: 20px;}
+        .text-center {text-align: center;}
+        .text-left {text-align: left;}
+        .text-right {text-align: right;}
+        .opacity-0 {opacity: 0;}
+        .block {display: block;}
+        .table-header-title {font-family: 'Titillium Web', sans-serif;font-size: 30px;font-weight: bold;line-height: normal;color: #fff;margin: 0;}
+        .table-header-subtitle {font-family: 'Titillium Web', sans-serif;font-size: 20px;font-weight: 200;line-height: normal;color: #fff;margin: 0;margin-top: 10px;}
+        .table-body-title {font-family: 'Titillium Web', sans-serif;font-size: 30px;font-weight: bold;line-height: normal;color: #333333;margin: 0;}
+        .table-body-title-border {width: 150px;height: 3px;display: inline-block;background-color: #f0b034;}
+    </style>    
+
+    <div class="col-xs-12 col-sm-12">
+        <div class="mobile-breadcrumbs-wrapper">
+            <ul class="mobile-breadcrumbs-group list-inline">
+                <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
+                <li><a href="{{url(admin/asps)}}">ASP</a></li>
+                <li><a href="#!/noc-pkg/noc/list/{{$ctrl.noc.type_id}}">NOC</a></li>
+            </ul>
+        </div>
+    </div>
+
+<!-- Container -->
+<div class="container-fluid">
+    <div class="dataTable-content--wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="dataTable--left_wrapper block-wrap">
+                            <h2 class="dataTable-title">NOC View</h2>                           
+                        </div>
+                    </div><!-- Column -->       
+                </div><!-- Row -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="viewData-wrapper">
+                            <div class="viewData-toggle--wrapper">
+                                <div class="viewData-toggle--wrapper">
+                                    <div class="viewData-toggle--inner">
+                                        <h2 class="viewData-toggle--title pull-left">NOC Number : <span>{{$ctrl.noc.number}}</span></h2>
+                                        <div class="clearfix"></div>
+                                        <ul class="short-info-list">
+                                            <li>ASP Name : <span>{{$ctrl.noc.asp_name}}</span></li>
+                                            <li>ASP Code : <span>{{$ctrl.noc.asp_code}}</span></li>
+                                            <li>NOC Type : <span>{{$ctrl.noc.noc_type_name}}</span></li>
+                                            <li>Created On : <span>{{$ctrl.noc.create_date}}</span></li>
+                                            <li>Status : <span>{{$ctrl.noc.status_name}}</span></li>
+                                        </ul>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                        <div class="pdf-wrap">
+                            <table class="table-outter">
+                                <tbody>
+                                    <tr>  
+                                        <td>
+                                            <table class="table-header">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <h1 class="table-header-title">{{$ctrl.noc.workshop_name}}</h1>
+                                                            <p class="table-header-subtitle">{{$ctrl.noc.workshop_address}}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table><!-- Table Header -->
+                                            <table class="table-body">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <table class="table-body-header">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                            <h2 class="table-body-title">No Due Certificate</h2>
+                                                                            <span class="table-body-title-border"></span>
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                            </table>
+                                                            <table class="table-body-content">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p>To</p>
+                                                        </p>TVS Auto Assist (India) Limited</br>(A division of TVS Automobile Solutions (P) Ltd.,),</p>
+                                                        </p>10, Jawahar Road,D,</p>
+                                                        </p>Chokikulam,</p>
+                                                        </p>Madurai – 625002.</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="space"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Subject: Account balance confirmation as on {{$ctrl.noc.cur_date}}.</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="space"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p>Sir,</p>
+                                                                            <p>This is to confirm that there is no amount dues from TVS Auto Assist India Limited(A division of TVS Automobile Solutions (P) Ltd.,) for the services rendered during the period of {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="space"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Thanking you</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td class="space"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <p>Digitally Authorized by OTP</p>
+                                                                            <p><b>{{$ctrl.noc.asp_name}}({{$ctrl.noc.asp_code}})</b></p>
+                                                                            <p>{{$ctrl.noc.contact_number}}</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table><!-- Table Outter -->
+                            <div class="text-right mt-20">
+                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id)" ng-show="(($ctrl.noc.status_id==400) && $ctrl.noc.can_confirm)">CONFIRM</button>
+                                <a href="{{$ctrl.noc.pdf_url}}" download class="btn btn-primary yellow customForm-btn" ng-show="$ctrl.noc.status_id==401">Download</a>
+                            </div>
+                        </div><!-- PDF Wrap -->
+                    </div><!-- Column -->
+                </div><!-- Row -->
+            </div><!-- Col Main -->
+        </div><!-- Row -->
+    </div><!-- DataTables Wrapper -->
+</div><!-- Container -->
+
+<div class="modal fade modal-bo" id="confirm-noc-modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content txt-center">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><img src="{{$ctrl.style_modal_close_image_url}}"></button>
+            </div>
+            <div class="modal-body">
+                <form novalidate id="otp_form" method="post" name="otp_form">
+                    <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
+                    <input type="hidden" name="noc_id" id="noc_id" ng-model="$ctrl.noc.id" value="{{$ctrl.noc.id}}">
+                    <h2 class="uploadMsg-title">CONFIRMATION</h2>
+                    <h4 >Enter OTP sent to your Mobile Number:{{$ctrl.noc.contact_number}}</h4>
+                        <div class="mt-30"></div>
+                    <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="form-group">
+                                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP"  ng-maxlength="6"  ng-minlength="6">
+                                </div>
+                                <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
+                                    <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
+                                    <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
+                                    <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    <div class="text-center">
+                            <button class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
+                    </div>
+                     <div class="text-center">
+                            <a class="btn-link" href="javascript:;"ng-click="confirmNoc($ctrl.noc.id)">Re-Send OTP</a>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
