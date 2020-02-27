@@ -22,7 +22,7 @@ app.component('nocList', {
 
         $scope.deleteConfirm = function($id) {
                 bootbox.confirm({
-                    message: 'Do you want to delete this activity?',
+                    message: 'Do you want to delete this NOC?',
                     className: 'action-confirm-modal',
                     buttons: {
                         confirm: {
