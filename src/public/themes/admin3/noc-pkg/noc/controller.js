@@ -186,6 +186,9 @@ app.component('nocList', {
         $(".filterTable").keyup(function() {
                 dataTable.fnFilter(this.value);
         });
+        $scope.refresh = function() {
+                dataTable.fnFilter();
+            };
         $(".filter-data").keyup(function() {
                 dataTable.fnFilter();
         });
