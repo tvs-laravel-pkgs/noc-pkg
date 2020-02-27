@@ -182,6 +182,11 @@ app.component('nocList', {
                 $('.search label input').focus();
             },
         });*/
+        $('.filter-content').bind('click', function(event) {
+            if ($('.md-select-menu-container').hasClass('md-active')) {
+                $mdSelect.hide();
+            }
+        });
          var dataTable = $('#noc_table').dataTable();
         $(".filterTable").keyup(function() {
                 dataTable.fnFilter(this.value);
