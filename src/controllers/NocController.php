@@ -47,6 +47,7 @@ class NocController extends Controller {
 	public function getFilterData(){
 		$this->data['noc_type_list'] = NocType::select('name','id')->get();
 		$this->data['noc_status_list'] = Config::where('entity_type_id',27)->select('name','id')->get();
+		$this->data['asp_permission'] = Entrust::can('view-own-noc');
 		return response()->json($this->data);
 	}
 

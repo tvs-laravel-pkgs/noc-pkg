@@ -27,7 +27,7 @@
                                     <div class="filter-overlay"></div>
                                     <div class="filter-content">
                                         <div class="filter-header">
-                                            <h2>Noc Filter</h2>
+                                            <h2>NOC Filter</h2>
                                         </div>
                                         <div class="filter-body">
                                             <div class="row">
@@ -57,7 +57,7 @@
                                                         <input ng-model="$ctrl.noc_number" id="noc_number" class="filter-data form-control filter-input" type="text" placeholder="NOC Number" autocomplete="off">
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-6" ng-show="!($ctrl.asp_permission)">
                                                     <div class="form-group">
                                                         <input ng-model="$ctrl.asp_code" id="asp_code" class="filter-data form-control filter-input" type="text" placeholder="ASP Code" autocomplete="off">
                                                     </div>

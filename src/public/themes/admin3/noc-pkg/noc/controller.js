@@ -63,6 +63,7 @@ app.component('nocList', {
             console.log(response.data);
             self.noc_type_list = response.data.noc_type_list;
             self.noc_status_list = response.data.noc_status_list;
+            self.asp_permission = response.data.asp_permission;
             console.log(self.noc_type_list);
             $rootScope.loading = false;
         });
