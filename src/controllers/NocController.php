@@ -241,17 +241,22 @@ class NocController extends Controller {
 			->select(
 				'nocs.id as id',
 				'asps.contact_number1 as contact_number',
-				'nocs.otp as otp'
+				'nocs.otp as otp',
+				'asps.asp_code as asp_code'
 			)
 			->where('nocs.id',$noc_id)
 			->first();
 		if($noc->contact_number){
 			if($noc->otp){
-				$otp =sendSMS2('OTP_FOR_ISSUE_NOC', $noc->contact_number, $noc->otp);
+				$otp =sendSMS2('OTP_FOR_ISSUE_NOC', $noc->contact_number,$noc->asp_code,$noc->otp);
+			$this->data['message'] = 'OTP Re-Sent to '.$noc->contact_number.' Successfully!!';
+
 			}else{
-				$otp =generateOtpNoc($noc->contact_number);
+				$otp =generateOtpNoc($noc);
 				$noc->otp = $otp;
 				$noc->save();
+			$this->data['message'] = 'OTP Sent to '.$noc->contact_number.' Successfully!!';
+
 			}
 			$this->data['noc'] = $noc;
 			$this->data['success'] = true;

@@ -225,6 +225,8 @@ app.component('nocView', {
         var self = this;
         self.hasPermission = HelperService.hasPermission;
         self.filter_img_url = filter_img_url;
+        self.style_modal_otp_sent_image_url = style_modal_otp_sent_image_url;
+        
         // self.style_dot_image_url = style_dot_image_url;
         console.log(noc_view_data_url);
         get_view_data_url = typeof($routeParams.id) == 'undefined' ? noc_view_data_url + '/' : noc_view_data_url + '/'  + $routeParams.id;
@@ -262,6 +264,37 @@ app.component('nocView', {
                 generate_otp_url
                 ).then(function(response){
                     $("#confirm-noc-modal").modal();
+                    if (!response.data.success) {
+                            var errors = '';
+                            for (var i in response.data.errors) {
+                                errors += '<li>' + response.data.errors[i] + '</li>';
+                            }
+                            $noty = new Noty({
+                                type: 'error',
+                                layout: 'topRight',
+                                text: errors,
+                                animation: {
+                                    speed: 500 // unavailable - no need
+                                },
+
+                            }).show();
+                            setTimeout(function() {
+                                $noty.close();
+                            }, 2000);
+                            return;
+                        } else {
+                            $noty = new Noty({
+                                type: 'success',
+                                layout: 'topRight',
+                                text: response.data.message,
+                                animation: {
+                                    speed: 500
+                                }
+                            }).show();
+                            setTimeout(function() {
+                                $noty.close();
+                            }, 1000);
+                        }
             });
         }
 

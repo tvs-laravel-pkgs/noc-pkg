@@ -43,7 +43,7 @@
                                                 <div class="col-sm-6">
                                                     <div class="form-group">
 
-                                                        <md-select ng-model="$ctrl.noc_type_id" ng-change="changeType()" placeholder="Select NOC Type">
+                                                        <md-select ng-model="$ctrl.noc_type_id" ng-change="changeType()" placeholder="Select Quarter">
                                                             <md-option ng-repeat="noc_type in $ctrl.noc_type_list" value="{{noc_type.id}}">{{noc_type.name}}</md-option>
                                                         </md-select>
                                                         <input type="hidden" name="noc_type_id" value="" id="noc_type_id">
@@ -91,7 +91,7 @@
                             <th class="action">Actions</th>
                             <th>Created On</th>
                             <th>NOC Number</th>
-                            <th>Type</th>
+                            <th>Quarter</th>
                             <th>ASP Code</th>
                             <th>Status</th>
                         </tr>

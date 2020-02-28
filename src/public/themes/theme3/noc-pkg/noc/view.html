@@ -25,6 +25,8 @@
         .table-header-subtitle {font-family: 'Titillium Web', sans-serif;font-size: 20px;font-weight: 200;line-height: normal;color: #fff;margin: 0;margin-top: 10px;}
         .table-body-title {font-family: 'Titillium Web', sans-serif;font-size: 30px;font-weight: bold;line-height: normal;color: #333333;margin: 0;}
         .table-body-title-border {width: 150px;height: 3px;display: inline-block;background-color: #f0b034;}
+        .btn-link {text-decoration: none;color: #feae33;cursor: pointer;}
+        .btn-link:hover {text-decoration: none;color: #fc9438;}
     </style>    
 
     <div class="col-xs-12 col-sm-12">
@@ -60,7 +62,7 @@
                                         <ul class="short-info-list">
                                             <li>ASP Name : <span>{{$ctrl.noc.asp_name}}</span></li>
                                             <li>ASP Code : <span>{{$ctrl.noc.asp_code}}</span></li>
-                                            <li>NOC Type : <span>{{$ctrl.noc.noc_type_name}}</span></li>
+                                            <li>NOC Quarter : <span>{{$ctrl.noc.noc_type_name}}</span></li>
                                             <li>Created On : <span>{{$ctrl.noc.create_date}}</span></li>
                                             <li>Status : <span>{{$ctrl.noc.status_name}}</span></li>
                                         </ul>
@@ -120,7 +122,7 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td>
-                                                                            <p>Sir,</p>
+                                                                            <p>Dear Sir,</p>
                                                                             <p>This is to confirm that there is no amount dues from TVS Auto Assist India Limited(A division of TVS Automobile Solutions (P) Ltd.,) for the services rendered during the period of {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
                                                                         </td>
                                                                     </tr>
@@ -166,7 +168,8 @@
     <div class="modal-dialog">
         <div class="modal-content txt-center">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><img src="{{$ctrl.style_modal_close_image_url}}"></button>
+                <img src="{{$ctrl.style_modal_otp_sent_image_url}}" class="uploadMsg-img" >
+                <button type="button" class="close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form novalidate id="otp_form" method="post" name="otp_form">
@@ -191,8 +194,10 @@
                     <div class="text-center">
                             <button class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
                     </div>
+                        <div class="mt-20"></div>
+
                      <div class="text-center">
-                            <a class="btn-link" href="javascript:;"ng-click="confirmNoc($ctrl.noc.id)">Re-Send OTP</a>
+                            <a  class="btn-link" ng-click="confirmNoc($ctrl.noc.id)">Re-Send OTP</a>
                         </div>
                 </form>
             </div>
