@@ -247,13 +247,13 @@ class NocController extends Controller {
 		if ($noc->contact_number) {
 			if ($noc->otp) {
 				$otp = sendSMS3('OTP_FOR_ISSUE_NOC', $noc->contact_number, $noc->asp_code, $noc->otp);
-				$this->data['message'] = 'OTP Re-Sent to ' . $noc->contact_number . ' Successfully!!';
+				$this->data['message'] = 'OTP Re-Sent to Successfully!!';
 
 			} else {
 				$otp = generateOtpNoc($noc);
 				$noc->otp = $otp;
 				$noc->save();
-				$this->data['message'] = 'OTP Sent to ' . $noc->contact_number . ' Successfully!!';
+				$this->data['message'] = 'OTP Sent to Successfully!!';
 
 			}
 			$this->data['noc'] = $noc;
