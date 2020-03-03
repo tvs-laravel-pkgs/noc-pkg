@@ -293,7 +293,7 @@ app.component('nocView', {
                             }).show();
                             setTimeout(function() {
                                 $noty.close();
-                            }, 1000);
+                            }, 2500);
                         }
             });
         }
