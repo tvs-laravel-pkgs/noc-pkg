@@ -258,8 +258,8 @@ app.component('nocView', {
             }
             $rootScope.loading = false;
         });
-        $scope.confirmNoc = function($noc_id) {
-            generate_otp_url = generate_otp + '/'  + $noc_id;
+        $scope.confirmNoc = function($noc_id,$s_id) {
+            generate_otp_url = generate_otp + '/'  + $noc_id + '/send/'+$s_id;
             $http.get(
                 generate_otp_url
                 ).then(function(response){
@@ -298,8 +298,7 @@ app.component('nocView', {
             });
         }
 
-        $scope.checkOtp = function(){
-
+        $scope.checkOtp = function($s_id){
             if ($scope.otp_form.$valid) {
                     //$('.approve_btn').button('loading');
                     if ($(".loader-type-2").hasClass("loader-hide")) {
@@ -391,6 +390,6 @@ app.component('nocView', {
         }
     }
 });
-
+progress-bar
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------

@@ -234,7 +234,7 @@ class NocController extends Controller {
 		return $response;
 	}*/
 
-	public function sendOTP($noc_id) {
+	public function sendOTP($noc_id,$otp_type_id) {
 		$noc = Noc::join('asps', 'nocs.to_entity_id', 'asps.id')
 			->select(
 				'nocs.id as id',
@@ -247,15 +247,13 @@ class NocController extends Controller {
 		if ($noc->contact_number) {
 			if ($noc->otp) {
 				$otp = sendSMS3('OTP_FOR_ISSUE_NOC', $noc->contact_number, $noc->asp_code, $noc->otp);
-				$this->data['message'] = 'OTP Re-Sent to Successfully!!';
 
 			} else {
 				$otp = generateOtpNoc($noc);
 				$noc->otp = $otp;
 				$noc->save();
-				$this->data['message'] = 'OTP Sent to Successfully!!';
-
 			}
+			$this->data['message'] = $otp_type_id==1 ? 'OTP Sent Successfully!!' : 'OTP Re-Sent Successfully!!';
 			$this->data['noc'] = $noc;
 			$this->data['success'] = true;
 			return response()->json($this->data);

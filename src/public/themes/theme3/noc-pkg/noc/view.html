@@ -153,7 +153,7 @@
                                 </tbody>
                             </table><!-- Table Outter -->
                             <div class="text-right mt-20">
-                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id)" ng-show="(($ctrl.noc.status_id==400) && $ctrl.noc.can_confirm)">CONFIRM</button>
+                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id,1)" ng-show="(($ctrl.noc.status_id==400) && $ctrl.noc.can_confirm)">CONFIRM</button>
                                 <a href="{{$ctrl.noc.pdf_url}}" download class="btn btn-primary yellow customForm-btn" ng-show="$ctrl.noc.status_id==401">Download</a>
                             </div>
                         </div><!-- PDF Wrap -->
@@ -197,7 +197,7 @@
                         <div class="mt-20"></div>
 
                      <div class="text-center">
-                            <a  class="btn-link" ng-click="confirmNoc($ctrl.noc.id)">Re-Send OTP</a>
+                            <a  class="btn-link" ng-click="confirmNoc($ctrl.noc.id,2)">Re-Send OTP</a>
                         </div>
                 </form>
             </div>
