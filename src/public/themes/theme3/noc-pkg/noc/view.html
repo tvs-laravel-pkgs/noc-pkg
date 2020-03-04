@@ -1,6 +1,5 @@
-
-    <style>       
-        .pdf-wrap {width: 100%;max-width: 793px;margin: 0 auto;padding-top: 20px;}
+<style>
+    .pdf-wrap {width: 100%;max-width: 793px;margin: 0 auto;padding-top: 20px;}
         table {font-family: 'Titillium Web', sans-serif;border-collapse: collapse;width: 100%;line-height: 1.4;margin-top: 0px;margin-bottom: 0;}
         table:last-child {margin-bottom: 0;} 
         th {font-size: 12px;font-weight: bold;line-height: normal;padding: 5px;}
@@ -27,18 +26,16 @@
         .table-body-title-border {width: 150px;height: 3px;display: inline-block;background-color: #f0b034;}
         .btn-link {text-decoration: none;color: #feae33;cursor: pointer;}
         .btn-link:hover {text-decoration: none;color: #fc9438;}
-    </style>    
-
-    <div class="col-xs-12 col-sm-12">
-        <div class="mobile-breadcrumbs-wrapper">
-            <ul class="mobile-breadcrumbs-group list-inline">
-                <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
-                <li><a href="{{url(admin/asps)}}">ASP</a></li>
-                <li><a href="#!/noc-pkg/noc/list/{{$ctrl.noc.type_id}}">NOC</a></li>
-            </ul>
-        </div>
+    </style>
+<div class="col-xs-12 col-sm-12">
+    <div class="mobile-breadcrumbs-wrapper">
+        <ul class="mobile-breadcrumbs-group list-inline">
+            <li><a href="#!<% $ctrl.laravel_routes['/'] %>">Home</a></li>
+            <li><a href="{{url(admin/asps)}}">ASP</a></li>
+            <li><a href="#!/noc-pkg/noc/list/{{$ctrl.noc.type_id}}">NOC</a></li>
+        </ul>
     </div>
-
+</div>
 <!-- Container -->
 <div class="container-fluid">
     <div class="dataTable-content--wrapper">
@@ -47,9 +44,9 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="dataTable--left_wrapper block-wrap">
-                            <h2 class="dataTable-title">NOC View</h2>                           
+                            <h2 class="dataTable-title">NOC View</h2>
                         </div>
-                    </div><!-- Column -->       
+                    </div><!-- Column -->
                 </div><!-- Row -->
                 <div class="row">
                     <div class="col-md-12">
@@ -68,13 +65,13 @@
                                         </ul>
                                         <div class="clearfix"></div>
                                     </div>
-                                </div>  
+                                </div>
                             </div>
                         </div>
                         <div class="pdf-wrap">
                             <table class="table-outter">
                                 <tbody>
-                                    <tr>  
+                                    <tr>
                                         <td>
                                             <table class="table-header">
                                                 <tbody>
@@ -105,10 +102,10 @@
                                                                     <tr>
                                                                         <td>
                                                                             <p>To</p>
-                                                        </p>TVS Auto Assist (India) Limited</br>(A division of TVS Automobile Solutions (P) Ltd.,),</p>
-                                                        </p>10, Jawahar Road,D,</p>
-                                                        </p>Chokikulam,</p>
-                                                        </p>Madurai – 625002.</p>
+                                                                            </p>TVS Auto Assist </br>(A division of TVS Automobile Solutions (P) Ltd.,),</p>
+                                                                            </p>10, Jawahar Road,D,</p>
+                                                                            </p>Chokikulam,</p>
+                                                                            </p>Madurai – 625002.</p>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -123,7 +120,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <p>Dear Sir,</p>
-                                                                            <p>This is to confirm that there is no amount dues from TVS Auto Assist India Limited(A division of TVS Automobile Solutions (P) Ltd.,) for the services rendered during the period of {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
+                                                                            <p>This is to confirm that there is no amount dues from TVS Auto Assist (A division of TVS Automobile Solutions (P) Ltd.,) for the services rendered during the period of {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -163,12 +160,11 @@
         </div><!-- Row -->
     </div><!-- DataTables Wrapper -->
 </div><!-- Container -->
-
 <div class="modal fade modal-bo" id="confirm-noc-modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content txt-center">
             <div class="modal-header">
-                <img src="{{$ctrl.style_modal_otp_sent_image_url}}" class="uploadMsg-img" >
+                <img src="{{$ctrl.style_modal_otp_sent_image_url}}" class="uploadMsg-img">
                 <button type="button" class="close" data-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -176,29 +172,27 @@
                     <input type="hidden" name="_token" value="{{ $ctrl.csrf }}" />
                     <input type="hidden" name="noc_id" id="noc_id" ng-model="$ctrl.noc.id" value="{{$ctrl.noc.id}}">
                     <h2 class="uploadMsg-title">CONFIRMATION</h2>
-                    <h4 >Enter OTP sent to your Mobile Number:{{$ctrl.noc.contact_number}}</h4>
-                        <div class="mt-30"></div>
+                    <h4>Enter OTP sent to your Mobile Number:{{$ctrl.noc.contact_number}}</h4>
+                    <div class="mt-30"></div>
                     <div class="row">
-                            <div class="col-md-10 col-md-offset-1">
-                                <div class="form-group">
-                                    <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP"  ng-maxlength="6"  ng-minlength="6">
-                                </div>
-                                <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
-                                    <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
-                                    <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
-                                    <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
-                                </div>
+                        <div class="col-md-10 col-md-offset-1">
+                            <div class="form-group">
+                                <input name="otp" type="text" value="{{$ctrl.otp}}" ng-model="$ctrl.otp" ng-required="true" class="form-control" autocomplete="off" placeholder="Enter OTP" ng-maxlength="6" ng-minlength="6">
+                            </div>
+                            <div ng-show="otp_form.$submitted || otp_form.otp.$touched">
+                                <span style="color:red" ng-show="otp_form.otp.$error.required">OTP is required.</span>
+                                <span style="color:red" ng-show="otp_form.otp.$error.maxlength">Please Enter 6 digit OTP</span>
+                                <span style="color:red" ng-show="otp_form.otp.$error.minlength">Please Enter 6 digit OTP</span>
                             </div>
                         </div>
-                    
-                    <div class="text-center">
-                            <button class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
                     </div>
-                        <div class="mt-20"></div>
-
-                     <div class="text-center">
-                            <a  class="btn-link" ng-click="confirmNoc($ctrl.noc.id,2)">Re-Send OTP</a>
-                        </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary yellow" type="btn" ng-click="checkOtp()">Confirm</button>
+                    </div>
+                    <div class="mt-20"></div>
+                    <div class="text-center">
+                        <a class="btn-link" ng-click="confirmNoc($ctrl.noc.id,2)">Re-Send OTP</a>
+                    </div>
                 </form>
             </div>
         </div>
