@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://fonts.googleapis.com/css?family=Titillium+Web:200,300,400,600,700,900&display=swap" rel="stylesheet">
         <style>
-            body {width: 100%;color: #000;min-height: 1110px;padding: 0px;font-family: 'Titillium Web', sans-serif;line-height: 1.4;margin: 0;}             
+            body {width: 100%;color: #000;min-height: 1110px;padding: 0px;font-family: 'Titillium Web', sans-serif;line-height: 1.4;margin: 0;}
             table {font-family: 'Titillium Web', sans-serif;border-collapse: collapse;width: 100%;margin-top: 0px;margin-bottom: 0;}
-            table:last-child {margin-bottom: 0;} 
+            table:last-child {margin-bottom: 0;}
             th {font-size: 12px;font-weight: bold;line-height: normal;padding: 5px;}
             td {font-size: 12px;line-height: normal;padding: 5px;font-family: 'Titillium Web', sans-serif;}
             .table-outter > tbody > tr > td {padding: 0;border: 1px solid #dfdfdf;}
@@ -37,7 +37,7 @@
         <!-- ORDER FORM -->
         <table class="table-outter">
             <tbody>
-                <tr>  
+                <tr>
                     <td>
                         <table class="table-header">
                             <tbody>
@@ -68,7 +68,7 @@
                                                 <tr>
                                                     <td>
                                                         <p>To</p>
-                                                        <p>TVS Auto Assist India Limited</p>
+                                                        <p>TVS Auto Assist</p>
                                                         <p>Chennai</p>
                                                     </td>
                                                 </tr>
@@ -84,7 +84,7 @@
                                                 <tr>
                                                     <td>
                                                         <p>Sir</p>
-                                                        <p>This is to confirm that there is no amount dues from TVS Auto Assist India Limited for the services rendered during the period of  {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
+                                                        <p>This is to confirm that there is no amount dues from TVS Auto Assist for the services rendered during the period of  {{$ctrl.noc.start_date}} to {{$ctrl.noc.end_date}}({{$ctrl.noc.quarter_name}}).</p>
                                                     </td>
                                                 </tr>
                                                 <tr>
