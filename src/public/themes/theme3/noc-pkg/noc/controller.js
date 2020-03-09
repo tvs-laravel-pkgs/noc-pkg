@@ -255,6 +255,15 @@ app.component('nocView', {
                 return;
             }else{
                 self.noc = response.data.noc;
+                console.log(self.noc.confirm_enable);
+                console.log(response.data.noc);
+                if(!self.noc.confirm_enable){
+                    $noty = new Noty({
+                    type: 'error',
+                    layout: 'topRight',
+                    text: 'Payment not Completed'
+                }).show();
+                }
             }
             $rootScope.loading = false;
         });

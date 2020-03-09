@@ -150,7 +150,7 @@
                                 </tbody>
                             </table><!-- Table Outter -->
                             <div class="text-right mt-20">
-                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id,1)" ng-show="(($ctrl.noc.status_id==400) && $ctrl.noc.can_confirm)">CONFIRM</button>
+                                <button class="btn btn-primary yellow customForm-btn" id="confirmNoc" ng-click="confirmNoc($ctrl.noc.id,1)" ng-show="(($ctrl.noc.status_id==400 && $ctrl.noc.can_confirm) && $ctrl.noc.confirm_enable)">CONFIRM</button>
                                 <a href="{{$ctrl.noc.pdf_url}}" download class="btn btn-primary yellow customForm-btn" ng-show="$ctrl.noc.status_id==401">Download</a>
                             </div>
                         </div><!-- PDF Wrap -->
