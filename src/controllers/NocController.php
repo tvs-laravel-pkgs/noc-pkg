@@ -5,6 +5,7 @@ use Abs\BasicPkg\Attachment;
 use Abs\NocPkg\Noc;
 use Abs\NocPkg\NocType;
 use App\Config;
+use App\MisInformation;
 use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
@@ -180,6 +181,7 @@ class NocController extends Controller {
 				'noc_types.name as noc_type_name',
 				'configs.name as status_name',
 				'asps.asp_code as asp_code',
+				'asps.id as asp_id',
 				DB::raw('DATE_FORMAT(fy_quarters.date,"%d-%m-%Y") as start_date'),
 				DB::raw('DATE_FORMAT(LAST_DAY(DATE_ADD(fy_quarters.date, INTERVAL +2 MONTH)),"%d-%m-%Y") as end_date'),
 				DB::raw('DATE_FORMAT(NOW(),"%d-%m-%Y") as cur_date'),
@@ -208,6 +210,19 @@ class NocController extends Controller {
 		/*if(){
 
 		}*/
+		$mis_info = MisInformation::where('asp_id', $this->data['noc']->asp_id)
+			->whereDate('ticket_date_time', '>=',date('Y-m-d',strtotime($this->data['noc']->start_date)))
+			->whereDate('ticket_date_time', '<=', date('Y-m-d',strtotime($this->data['noc']->end_date)))
+			->where('flow_current_status', '!=', 'Waiting for ASP - BO Deferred')
+			->where('flow_current_status', '!=', 'Waiting for ASP Data Entry')
+			->count();
+		$mis_info_completed = MisInformation::where('asp_id', $this->data['noc']->asp_id)
+				->whereDate('ticket_date_time', '>=', date('Y-m-d',strtotime($this->data['noc']->start_date)))
+				->whereDate('ticket_date_time', '<=',  date('Y-m-d',strtotime($this->data['noc']->end_date)))
+				->where('flow_current_status', 'Payment Confirmed')
+				->count();
+		$this->data['noc']['confirm_enable'] = ($mis_info == $mis_info_completed) ? true : false;
+
 		$this->data['noc']['pdf_url'] = '#';
 		$this->data['noc']['can_confirm'] = Entrust::can('view-own-noc');
 		$this->data['noc']['pdf_download'] = false;
@@ -217,7 +232,6 @@ class NocController extends Controller {
 		}
 		$this->data['success'] = true;
 		$this->data['theme'];
-
 		return response()->json($this->data);
 	}
 
