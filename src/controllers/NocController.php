@@ -4,9 +4,10 @@ namespace Abs\NocPkg;
 use Abs\BasicPkg\Attachment;
 use Abs\NocPkg\Noc;
 use Abs\NocPkg\NocType;
+use Abs\RsaCasePkg\Activity;
 use App\Config;
-use App\MisInformation;
 use App\Http\Controllers\Controller;
+use App\MisInformation;
 use Auth;
 use Carbon\Carbon;
 use DB;
@@ -174,6 +175,7 @@ class NocController extends Controller {
 				'nocs.id as id',
 				'nocs.type_id as type_id',
 				'nocs.for_id as for_id',
+				'nocs.for_type_id',
 				'nocs.status_id as status_id',
 				'nocs.id as id',
 				'nocs.number as number',
@@ -204,24 +206,42 @@ class NocController extends Controller {
 		if (!$noc) {
 			return response()->json(['success' => false, 'errors' => ['NOC not found!!']]);
 		}
-		//dd($noc);
+		// dd($noc);
 		//$this->data['attachment'] = $attachment;
 		//$this->data['action'] = $action;
 		/*if(){
 
 		}*/
-		$mis_info = MisInformation::where('asp_id', $this->data['noc']->asp_id)
-			->whereDate('ticket_date_time', '>=',date('Y-m-d',strtotime($this->data['noc']->start_date)))
-			->whereDate('ticket_date_time', '<=', date('Y-m-d',strtotime($this->data['noc']->end_date)))
-			->where('flow_current_status', '!=', 'Waiting for ASP - BO Deferred')
-			->where('flow_current_status', '!=', 'Waiting for ASP Data Entry')
-			->count();
-		$mis_info_completed = MisInformation::where('asp_id', $this->data['noc']->asp_id)
-				->whereDate('ticket_date_time', '>=', date('Y-m-d',strtotime($this->data['noc']->start_date)))
-				->whereDate('ticket_date_time', '<=',  date('Y-m-d',strtotime($this->data['noc']->end_date)))
+		//MIS INFO
+		if ($noc->for_type_id == 1) {
+			$mis_info = MisInformation::where('asp_id', $noc->asp_id)
+				->whereDate('ticket_date_time', '>=', date('Y-m-d', strtotime($noc->start_date)))
+				->whereDate('ticket_date_time', '<=', date('Y-m-d', strtotime($noc->end_date)))
+				->where('flow_current_status', '!=', 'Waiting for ASP - BO Deferred')
+				->where('flow_current_status', '!=', 'Waiting for ASP Data Entry')
+				->count();
+			$mis_info_completed = MisInformation::where('asp_id', $noc->asp_id)
+				->whereDate('ticket_date_time', '>=', date('Y-m-d', strtotime($noc->start_date)))
+				->whereDate('ticket_date_time', '<=', date('Y-m-d', strtotime($noc->end_date)))
 				->where('flow_current_status', 'Payment Confirmed')
 				->count();
-		$this->data['noc']['confirm_enable'] = ($mis_info == $mis_info_completed) ? true : false;
+			$this->data['noc']['confirm_enable'] = ($mis_info == $mis_info_completed) ? true : false;
+		} else {
+			//CASE & ACTIVITY
+			$mis_info = Activity::join('cases', 'cases.id', 'activities.case_id')
+				->where('activities.asp_id', $noc->asp_id)
+				->whereDate('cases.date', '>=', date('Y-m-d', strtotime($noc->start_date)))
+				->whereDate('cases.date', '<=', date('Y-m-d', strtotime($noc->end_date)))
+				->whereNotIn('activities.status_id', [2, 4, 7])
+				->count();
+			$mis_info_completed = Activity::join('cases', 'cases.id', 'activities.case_id')
+				->where('activities.asp_id', $noc->asp_id)
+				->whereDate('cases.date', '>=', date('Y-m-d', strtotime($noc->start_date)))
+				->whereDate('cases.date', '<=', date('Y-m-d', strtotime($noc->end_date)))
+				->where('activities.status_id', 14) //PAID
+				->count();
+			$this->data['noc']['confirm_enable'] = ($mis_info == $mis_info_completed) ? true : false;
+		}
 
 		$this->data['noc']['pdf_url'] = '#';
 		$this->data['noc']['can_confirm'] = Entrust::can('view-own-noc');
