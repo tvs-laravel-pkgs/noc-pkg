@@ -5,8 +5,8 @@ use Abs\BasicPkg\Attachment;
 use Abs\NocPkg\Noc;
 use Abs\NocPkg\NocType;
 use App\Config;
-use App\MisInformation;
 use App\Http\Controllers\Controller;
+use App\MisInformation;
 use Auth;
 use Carbon\Carbon;
 use DB;
@@ -211,16 +211,16 @@ class NocController extends Controller {
 
 		}*/
 		$mis_info = MisInformation::where('asp_id', $this->data['noc']->asp_id)
-			->whereDate('ticket_date_time', '>=',date('Y-m-d',strtotime($this->data['noc']->start_date)))
-			->whereDate('ticket_date_time', '<=', date('Y-m-d',strtotime($this->data['noc']->end_date)))
+			->whereDate('ticket_date_time', '>=', date('Y-m-d', strtotime($this->data['noc']->start_date)))
+			->whereDate('ticket_date_time', '<=', date('Y-m-d', strtotime($this->data['noc']->end_date)))
 			->where('flow_current_status', '!=', 'Waiting for ASP - BO Deferred')
 			->where('flow_current_status', '!=', 'Waiting for ASP Data Entry')
 			->count();
 		$mis_info_completed = MisInformation::where('asp_id', $this->data['noc']->asp_id)
-				->whereDate('ticket_date_time', '>=', date('Y-m-d',strtotime($this->data['noc']->start_date)))
-				->whereDate('ticket_date_time', '<=',  date('Y-m-d',strtotime($this->data['noc']->end_date)))
-				->where('flow_current_status', 'Payment Confirmed')
-				->count();
+			->whereDate('ticket_date_time', '>=', date('Y-m-d', strtotime($this->data['noc']->start_date)))
+			->whereDate('ticket_date_time', '<=', date('Y-m-d', strtotime($this->data['noc']->end_date)))
+			->where('flow_current_status', 'Payment Confirmed')
+			->count();
 		$this->data['noc']['confirm_enable'] = ($mis_info == $mis_info_completed) ? true : false;
 
 		$this->data['noc']['pdf_url'] = '#';
@@ -260,7 +260,7 @@ class NocController extends Controller {
 			->first();
 		if ($noc->contact_number) {
 			if ($noc->otp) {
-				$otp = sendSMS3('OTP_FOR_ISSUE_NOC', $noc->contact_number, $noc->asp_code, $noc->otp);
+				$otp = sendSMS3('OTP for No due certificate', $noc->contact_number, $noc->asp_code, $noc->otp);
 
 			} else {
 				$otp = generateOtpNoc($noc);
