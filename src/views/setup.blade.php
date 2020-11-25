@@ -33,6 +33,6 @@
     var get_filter_data ="{{url('/noc-pkg/noc/get-filter-data/')}}";
   var style_modal_close_image_url = "{{URL::asset('resources/assets/images/modal-close.svg')}}";
   var style_modal_otp_sent_image_url = "{{URL::asset('resources/assets/images/mobile-icon.svg')}}";
-    
+
 </script>
-<script type="text/javascript" src="{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/controller.js')}}"></script>
+<!-- <script type="text/javascript" src="{{asset($noc_pkg_prefix.'/public/themes/'.$theme.'/noc-pkg/noc/controller.js')}}"></script> -->
