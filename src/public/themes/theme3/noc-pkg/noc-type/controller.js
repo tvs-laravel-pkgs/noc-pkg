@@ -1,4 +1,4 @@
-app.component('nocList', {
+app.component('nocList1', {
     templateUrl: noc_list_template_url,
     controller: function($http, $window, HelperService, $scope, $rootScope, $mdSelect) {
         $scope.loading = true;
@@ -214,7 +214,7 @@ app.component('nocList', {
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
 
-app.component('nocDelete', {
+app.component('nocDelete1', {
     controller: function($http, $window, HelperService, $scope, $routeParams) {
         $.ajax({
             url: noc_delete_row + '/' + $routeParams.id,
@@ -236,7 +236,7 @@ app.component('nocDelete', {
 //------------------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------------------
 
-app.component('nocView', {
+app.component('nocView1', {
     templateUrl: noc_view_template_url,
     controller: function($http, $location, $window, HelperService, $scope, $routeParams, $rootScope, $location) {
         $scope.loading = true;
