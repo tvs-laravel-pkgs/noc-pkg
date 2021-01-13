@@ -210,6 +210,24 @@ class NocController extends Controller {
 		/*if(){
 
 		}*/
+
+		//CHECK NEW/OLD COMPANY ADDRESS BY INVOICE CREATION DATE
+		$inv_created = date('Y-m-d', strtotime($noc->create_date));
+		$automobile_company_effect_date = config('rsa.AUTOMOBILE_COMPANY_EFFECT_DATE');
+		$ki_company_effect_date = config('rsa.KI_COMPANY_EFFECT_DATE');
+
+		$this->data['noc']['auto_assist_company_address'] = false;
+		$this->data['noc']['automobile_company_address'] = false;
+		$this->data['noc']['ki_company_address'] = false;
+
+		if ($inv_created < $automobile_company_effect_date) {
+			$this->data['noc']['auto_assist_company_address'] = true;
+		} elseif ($inv_created >= $automobile_company_effect_date && $inv_created < $ki_company_effect_date) {
+			$this->data['noc']['automobile_company_address'] = true;
+		} else {
+			$this->data['noc']['ki_company_address'] = true;
+		}
+
 		$mis_info = MisInformation::where('asp_id', $this->data['noc']->asp_id)
 			->whereDate('ticket_date_time', '>=', date('Y-m-d', strtotime($this->data['noc']->start_date)))
 			->whereDate('ticket_date_time', '<=', date('Y-m-d', strtotime($this->data['noc']->end_date)))
