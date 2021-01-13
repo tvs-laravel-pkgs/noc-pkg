@@ -222,10 +222,13 @@ class NocController extends Controller {
 
 		if ($inv_created < $automobile_company_effect_date) {
 			$this->data['noc']['auto_assist_company_address'] = true;
+			$this->data['noc']['company_name'] = 'TVS Auto Assist (A Division of TVS Automobile Solutions Private Limited)';
 		} elseif ($inv_created >= $automobile_company_effect_date && $inv_created < $ki_company_effect_date) {
 			$this->data['noc']['automobile_company_address'] = true;
+			$this->data['noc']['company_name'] = 'TVS Auto Assist (A Division of TVS Automobile Solutions Private Limited)';
 		} else {
 			$this->data['noc']['ki_company_address'] = true;
+			$this->data['noc']['company_name'] = config('rsa.SRP_COMPANY_NAME');
 		}
 
 		$mis_info = MisInformation::where('asp_id', $this->data['noc']->asp_id)
