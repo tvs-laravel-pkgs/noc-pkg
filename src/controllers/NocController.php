@@ -281,7 +281,7 @@ class NocController extends Controller {
 			->first();
 		if ($noc->contact_number) {
 			if ($noc->otp) {
-				$otp = sendSMS3('OTP for No due certificate', $noc->contact_number, $noc->asp_code, $noc->otp);
+				$otp = sendSMS3('OTP for No due certificate', $noc->contact_number, $noc->asp_code, $noc->otp, NULL);
 
 			} else {
 				$otp = generateOtpNoc($noc);
